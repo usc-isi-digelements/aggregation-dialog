@@ -1,14 +1,17 @@
-# aggregation-display
+# aggregation-dialog
 
-A Polymer Element showing a bar chart with a header, loading spinner, and Show More button.
+A Polymer Element showing an aggregation-display element in a styled-dialog that automatically changes the data limit when opened.
 
 ### Example
 ```html
-<aggregation-display
+<aggregation-dialog
   show-checkboxes
   data="[[data]]"
+  dialog-header="My Data"
+  limit="{{limit}}"
+  order-by="{{order}}"
   selected-ids="{{selected}}">
-</aggregation-display>
+</aggregation-dialog>
 ```
 
 ### Dependencies
