@@ -1,0 +1,374 @@
+<!--
+Copyright 2017 Next Century Corporation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../aggregation-display/aggregation-display.html">
+<link rel="import" href="../aggregation-sort/aggregation-sort.html">
+<link rel="import" href="../styled-dialog/styled-dialog.html">
+
+<!--
+A Polymer Element showing an aggregation-display element in a styled-dialog that automatically changes the data limit when opened.
+
+### Example
+```html
+<aggregation-dialog
+  show-checkboxes
+  data="[[data]]"
+  dialog-header="My Data"
+  limit="{{limit}}"
+  order-by="{{order}}"
+  selected-ids="{{selected}}">
+</aggregation-dialog>
+```
+
+@demo demo/index.html
+-->
+
+<dom-module id="aggregation-dialog">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .link {
+        text-decoration: underline;
+      }
+
+      .link:not(.disabled):hover {
+        cursor: pointer;
+      }
+
+      .disabled {
+        color: var(--secondary-text-color);
+        pointer-events: none;
+      }
+
+      styled-dialog ::content .fill {
+        /* Set a max-height (because the aggregation-display doesn't fill) that is at least 750px (the height of the inside of the styled-dialog). */
+        max-height: 750px;
+      }
+
+      styled-dialog ::content .data {
+        /* Height of 24 rows. */
+        max-height: 560px;
+      }
+    </style>
+
+    <template is="dom-if" if="[[_showLink(data.length, loading)]]">
+      <span class$="link [[_getLinkStyleClass(limit, data.length)]]" on-tap="open">View More</span>
+    </template>
+
+    <styled-dialog fill header="[[dialogHeader]]">
+      <aggregation-sort order-by="{{orderBy}}"></aggregation-sort>
+
+      <aggregation-display
+        limit="[[limit]]"
+        count-property="[[countProperty]]"
+        icon-property="[[iconProperty]]"
+        id-property="[[idProperty]]"
+        link-property="[[linkProperty]]"
+        style-class-property="[[styleClassProperty]]"
+        text-property="[[textProperty]]"
+        data="[[data]]"
+        header-data-name="[[headerDataName]]"
+        header-counts-name="[[headerCountsName]]"
+        show-checkboxes="[[showCheckboxes]]"
+        checkbox-name="[[checkboxName]]"
+        error-message="[[errorMessage]]"
+        loading="[[loading]]"
+        selected-ids="{{selectedIds}}">
+      </aggregation-display>
+    </styled-dialog>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'aggregation-dialog',
+
+      properties: {
+        /**
+         * (Required)
+         *
+         * The aggregation results.
+         *
+         * @type {Array}
+         */
+        data: {
+          type: Array
+        },
+
+        /**
+         * (Optional)
+         *
+         * The count property in the data objects.
+         *
+         * @type {String}
+         * @default 'count'
+         */
+        countProperty: {
+          type: String,
+          value: 'count'
+        },
+
+        /**
+         * (Optional)
+         *
+         * The icon property in the data objects.
+         *
+         * @type {String}
+         * @default 'icon'
+         */
+        iconProperty: {
+          type: String,
+          value: 'icon'
+        },
+
+        /**
+         * (Optional)
+         *
+         * The ID property in the data objects.
+         *
+         * @type {String}
+         * @default 'id'
+         */
+        idProperty: {
+          type: String,
+          value: 'id'
+        },
+
+        /**
+         * (Optional)
+         *
+         * The link property in the data objects.
+         *
+         * @type {String}
+         * @default 'link'
+         */
+        linkProperty: {
+          type: String,
+          value: 'link'
+        },
+
+        /**
+         * (Optional)
+         *
+         * The style class property in the data objects.
+         *
+         * @type {String}
+         * @default 'styleClass'
+         */
+        styleClassProperty: {
+          type: String,
+          value: 'styleClass'
+        },
+
+        /**
+         * (Optional)
+         *
+         * The text property in the data objects.
+         *
+         * @type {String}
+         * @default 'text'
+         */
+        textProperty: {
+          type: String,
+          value: 'text'
+        },
+
+        /**
+         * (Optional)
+         *
+         * The dialog header.
+         *
+         * @type {String}
+         * @default 'Data'
+         */
+        dialogHeader: {
+          type: String,
+          value: 'Data'
+        },
+
+        /**
+         * (Optional)
+         *
+         * The error message.
+         *
+         * @type {String}
+         * @default ''
+         */
+        errorMessage: {
+          type: String,
+          value: ''
+        },
+
+        /**
+         * (Optional)
+         *
+         * Whether the aggregation is loading.
+         *
+         * @type {Boolean}
+         * @default false
+         */
+        loading: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * (Optional)
+         *
+         * The header data name.
+         *
+         * @type {String}
+         * @default ''
+         */
+        headerDataName: {
+          type: String,
+          value: ''
+        },
+
+        /**
+         * (Optional)
+         *
+         * The header counts name.
+         *
+         * @type {String}
+         * @default ''
+         */
+        headerCountsName: {
+          type: String,
+          value: ''
+        },
+
+        /**
+         * (Optional)
+         *
+         * Whether to show checkboxes in the bar chart.
+         *
+         * @type {Boolean}
+         * @default false
+         */
+        showCheckboxes: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * (Optional)
+         *
+         * The name of the checkboxes.
+         *
+         * @type {String}
+         * @default 'Filter'
+         */
+        checkboxName: {
+          type: String,
+          value: 'Filter'
+        },
+
+        /**
+         * (Optional)
+         *
+         * The number of aggregation results to show once the dialog is opened.
+         *
+         * @type {Number}
+         * @default 1000
+         */
+        openedLimit: {
+          type: Number,
+          value: 1000
+        },
+
+        /**
+         * (Output)
+         *
+         * The number of aggregation results to show in the bar chart.
+         *
+         * @type {Number}
+         * @default 10
+         */
+        limit: {
+          notify: true,
+          type: Number,
+          value: 10
+        },
+
+        /**
+         * (Output)
+         *
+         * The elasticsearch aggregation query order field.
+         *
+         * @type {String}
+         * @default ''
+         */
+        orderBy: {
+          notify: true,
+          type: String,
+          value: ''
+        },
+
+        /**
+         * (Output)
+         *
+         * The list of selected IDs from the data.
+         *
+         * @type {Array}
+         * @default []
+         */
+        selectedIds: {
+          notify: true,
+          type: Array,
+          value: function() {
+            return [];
+          }
+        }
+      },
+
+      /**
+       * Returns the link style class.
+       *
+       * @param {Number} limit
+       * @param {Number} count
+       * @return {String}
+       * @private
+       */
+      _getLinkStyleClass: function(limit, count) {
+        return limit && limit > count ? 'disabled' : '';
+      },
+
+      /**
+       * Return whether to show the link.
+       *
+       * @param {Number} count
+       * @param {Boolean} loading
+       * @return {Boolean}
+       * @private
+       */
+      _showLink: function(count, loading) {
+        return !!count && !loading;
+      },
+
+      /**
+       * Set the aggregation count to 0 and open the dialog.
+       */
+      open: function() {
+        this.set('limit', this.openedLimit);
+        this.$$('styled-dialog').open();
+      }
+    });
+  </script>
+</dom-module>

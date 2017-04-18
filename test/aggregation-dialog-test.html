@@ -1,0 +1,184 @@
+<!--
+Copyright 2017 Next Century Corporation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+  <link rel="import" href="../aggregation-dialog.html">
+</head>
+
+<body>
+  <test-fixture id="aggregation-dialog-fixture">
+    <template>
+      <aggregation-dialog></aggregation-dialog>
+    </template>
+  </test-fixture>
+
+  <script>
+    /* globals fixture, suite, setup, test, expect, flush */
+    /* jshint -W030 */
+
+    suite('aggregation-dialog tests', function() {
+      var element;
+
+      setup(function() {
+        element = fixture('aggregation-dialog-fixture');
+        element.dialogHeader = 'My Dialog Header';
+        element.headerDataName = 'My Data';
+        element.headerCountsName = 'My Counts';
+        element.showCheckboxes = true;
+        element.checkboxName = 'My Checkbox';
+        element.data = [];
+      });
+
+      test('input properties are set correctly', function() {
+        expect(element.dialogHeader).to.equal('My Dialog Header');
+        expect(element.headerDataName).to.equal('My Data');
+        expect(element.headerCountsName).to.equal('My Counts');
+        expect(element.showCheckboxes).to.be.true;
+        expect(element.checkboxName).to.equal('My Checkbox');
+      });
+
+      test('default properties are set correctly', function() {
+        expect(element.limit).to.equal(10);
+        expect(element.openedLimit).to.equal(1000);
+        expect(element.countProperty).to.equal('count');
+        expect(element.iconProperty).to.equal('icon');
+        expect(element.idProperty).to.equal('id');
+        expect(element.linkProperty).to.equal('link');
+        expect(element.styleClassProperty).to.equal('styleClass');
+        expect(element.textProperty).to.equal('text');
+        expect(element.errorMessage).to.equal('');
+        expect(element.orderBy).to.equal('');
+        expect(element.loading).to.be.false;
+        expect(element.selectedIds).to.deep.equal([]);
+      });
+
+      test('does not have link element', function() {
+        expect(element.$$('.link')).to.not.exist;
+      });
+
+      test('does have disabled link element if data.length is non-zero', function(done) {
+        element.data = [{
+          count: 1,
+          id: '1',
+          text: 'One'
+        }, {
+          count: 2,
+          id: '2',
+          text: 'Two'
+        }]
+
+        flush(function() {
+          expect(element.$$('.link')).to.exist;
+          expect(element.$$('.link').classList.contains('disabled')).to.be.true;
+          done();
+        });
+      });
+
+      test('does have non-disabled link element if data.length is greater than limit', function(done) {
+        element.data = [{
+          count: 1,
+          id: '1',
+          text: 'One'
+        }, {
+          count: 2,
+          id: '2',
+          text: 'Two'
+        }]
+        element.limit = 1;
+
+        flush(function() {
+          expect(element.$$('.link')).to.exist;
+          expect(element.$$('.link').classList.contains('disabled')).to.be.false;
+          done();
+        });
+      });
+
+      test('does have styled-dialog element', function() {
+        expect(element.$$('styled-dialog')).to.exist;
+        expect(element.$$('styled-dialog').fill).to.be.true;
+        expect(element.$$('styled-dialog').header).to.equal('My Dialog Header');
+        expect(element.$$('styled-dialog').opened).to.be.false;
+      });
+
+      test('does have aggregation-sort element', function() {
+        expect(element.$$('aggregation-sort')).to.exist;
+      });
+
+      test('does have aggregation-display element', function() {
+        expect(element.$$('aggregation-display')).to.exist;
+        expect(element.$$('aggregation-display').limit).to.equal(10);
+        expect(element.$$('aggregation-display').countProperty).to.equal('count');
+        expect(element.$$('aggregation-display').iconProperty).to.equal('icon');
+        expect(element.$$('aggregation-display').idProperty).to.equal('id');
+        expect(element.$$('aggregation-display').linkProperty).to.equal('link');
+        expect(element.$$('aggregation-display').styleClassProperty).to.equal('styleClass');
+        expect(element.$$('aggregation-display').textProperty).to.equal('text');
+        expect(element.$$('aggregation-display').headerDataName).to.equal('My Data');
+        expect(element.$$('aggregation-display').headerCountsName).to.equal('My Counts');
+        expect(element.$$('aggregation-display').showCheckboxes).to.be.true;
+        expect(element.$$('aggregation-display').checkboxName).to.equal('My Checkbox');
+        expect(element.$$('aggregation-display').selectedIds).to.deep.equal([]);
+      });
+
+      test('open() does set limit to openedLimit=1000 and open dialog', function(done) {
+        element.open();
+
+        flush(function() {
+          expect(element.$$('styled-dialog')).to.exist;
+          expect(element.$$('styled-dialog').opened).to.be.true;
+          expect(element.limit).to.equal(1000);
+          done();
+        });
+      });
+
+      test('open() does set limit to openedLimit=100 and open dialog', function(done) {
+        element.openedLimit = 100;
+        element.open();
+
+        flush(function() {
+          expect(element.$$('styled-dialog')).to.exist;
+          expect(element.$$('styled-dialog').opened).to.be.true;
+          expect(element.limit).to.equal(100);
+          done();
+        });
+      });
+
+      test('_getLinkStyleClass() does return correctly', function() {
+        expect(element._getLinkStyleClass).to.be.a('Function');
+        expect(element._getLinkStyleClass(0, 0)).to.equal('');
+        expect(element._getLinkStyleClass(0, 1)).to.equal('');
+        expect(element._getLinkStyleClass(1, 1)).to.equal('');
+        expect(element._getLinkStyleClass(1, 2)).to.equal('');
+        expect(element._getLinkStyleClass(1, 0)).to.equal('disabled');
+        expect(element._getLinkStyleClass(2, 1)).to.equal('disabled');
+      });
+
+      test('_showLink() does return correctly', function() {
+        expect(element._showLink).to.be.a('Function');
+        expect(element._showLink(0, false)).to.be.false;
+        expect(element._showLink(1, false)).to.be.true;
+        expect(element._showLink(0, true)).to.be.false;
+        expect(element._showLink(1, true)).to.be.false;
+      });
+    });
+  </script>
+</body>
+</html>
