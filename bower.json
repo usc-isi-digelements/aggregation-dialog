@@ -1,7 +1,7 @@
 {
   "name": "aggregation-dialog",
   "description": "A Polymer Element showing an aggregation-display element in a styled-dialog that automatically changes the data limit when opened.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "authors": ["Next Century Corporation"],
   "license": "Apache-2.0",
   "keywords": [
@@ -17,7 +17,7 @@
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#^1.7.0",
-    "aggregation-display": "DigElements/aggregation-display#^1.0.3",
+    "aggregation-display": "DigElements/aggregation-display#^1.0.4",
     "aggregation-sort": "DigElements/aggregation-sort#^1.0.1",
     "styled-dialog": "DigElements/styled-dialog#1.0.2"
   },
