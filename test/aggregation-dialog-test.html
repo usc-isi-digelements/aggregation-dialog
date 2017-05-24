@@ -37,84 +37,132 @@ limitations under the License.
     suite('aggregation-dialog tests', function() {
       var element;
 
-      setup(function() {
+      setup(function(done) {
         element = fixture('aggregation-dialog-fixture');
-        element.dialogHeader = 'My Dialog Header';
+        element.indexName = 'myIndexName';
+        element.indexTypes = ['myIndexType'];
+        element.processRequest = true;
+        element.queryBuilderConfig = {
+          config: {}
+        };
+        element.searchParameters = {
+          search: {}
+        };
+        element.aggregationField = 'myAggregationField';
+        element.aggregationName = 'myAggregationName';
+        element.combineFunction = function() {};
         element.headerDataName = 'My Data';
         element.headerCountsName = 'My Counts';
         element.showCheckboxes = true;
         element.checkboxName = 'My Checkbox';
-        element.data = [];
+        element._dataFilteredList = [];
+        element._dataUnfilteredList = [];
+        element._dataselectedList = [];
+        flush(done);
       });
 
       test('input properties are set correctly', function() {
-        expect(element.dialogHeader).to.equal('My Dialog Header');
+        expect(element.indexName).to.equal('myIndexName');
+        expect(element.indexTypes).to.deep.equal(['myIndexType']);
+        expect(element.processRequest).to.be.true;
+        expect(element.queryBuilderConfig).to.deep.equal({
+          config: {}
+        });
+        expect(element.searchParameters).to.deep.equal({
+          search: {}
+        });
+        expect(element.aggregationField).to.equal('myAggregationField');
+        expect(element.aggregationName).to.equal('myAggregationName');
         expect(element.headerDataName).to.equal('My Data');
         expect(element.headerCountsName).to.equal('My Counts');
         expect(element.showCheckboxes).to.be.true;
         expect(element.checkboxName).to.equal('My Checkbox');
+        expect(element._dataFilteredList).to.deep.equal([]);
+        expect(element._dataSelectedList).to.deep.equal([]);
+        expect(element._dataUnfilteredList).to.deep.equal([]);
       });
 
       test('default properties are set correctly', function() {
-        expect(element.limit).to.equal(10);
-        expect(element.openedLimit).to.equal(1000);
+        expect(element.hide).to.be.false;
+        expect(element.limit).to.equal(500);
+        expect(element.matchAll).to.be.false;
+        expect(element.orderBy).to.equal('');
+        expect(element.target).to.equal('_self');
         expect(element.countProperty).to.equal('count');
         expect(element.iconProperty).to.equal('icon');
         expect(element.idProperty).to.equal('id');
         expect(element.linkProperty).to.equal('link');
         expect(element.styleClassProperty).to.equal('styleClass');
         expect(element.textProperty).to.equal('text');
-        expect(element.errorMessage).to.equal('');
-        expect(element.orderBy).to.equal('');
-        expect(element.loading).to.be.false;
+        expect(element._errorFilteredList).to.not.exist;
+        expect(element._errorUnfilteredList).to.not.exist;
+        expect(element._errorMessageFilteredList).to.equal('');
+        expect(element._errorMessageUnfilteredList).to.equal('');
+        expect(element._loadingFilteredList).to.be.false;
+        expect(element._loadingUnfilteredList).to.be.false;
+        expect(element._opened).to.be.false;
+        expect(element._runQueries).to.be.false;
         expect(element.selectedIds).to.deep.equal([]);
       });
 
-      test('does not have link element', function() {
-        expect(element.$$('.link')).to.not.exist;
+      test('does have link element', function() {
+        expect(element.$$('.link')).to.exist;
       });
 
-      test('does have disabled link element if data.length is non-zero', function(done) {
-        element.data = [{
-          count: 1,
-          id: '1',
-          text: 'One'
-        }, {
-          count: 2,
-          id: '2',
-          text: 'Two'
-        }];
-
+      test('does not have link element if hide is true', function(done) {
+        element.hide = true;
         flush(function() {
-          expect(element.$$('.link')).to.exist;
-          expect(element.$$('.link').classList.contains('disabled')).to.be.true;
+          expect(element.$$('.link').style.display).to.equal('none');
           done();
         });
       });
 
-      test('does have non-disabled link element if data.length is greater than limit', function(done) {
-        element.data = [{
-          count: 1,
-          id: '1',
-          text: 'One'
-        }, {
-          count: 2,
-          id: '2',
-          text: 'Two'
-        }];
-        element.limit = 1;
+      test('does have facet-aggregation-query elements', function() {
+        var queryElements = document.querySelectorAll('facet-aggregation-query');
 
-        flush(function() {
-          expect(element.$$('.link')).to.exist;
-          expect(element.$$('.link').classList.contains('disabled')).to.be.false;
-          done();
+        expect(queryElements[0]).to.exist;
+        expect(queryElements[0].index).to.equal('myIndexName');
+        expect(queryElements[0].indexTypes).to.deep.equal(['myIndexType']);
+        expect(queryElements[0].matchAll).to.be.false;
+        expect(queryElements[0].processRequest).to.be.false;
+        expect(queryElements[0].queryBuilderConfig).to.deep.equal({
+          config: {}
         });
+        expect(queryElements[0].searchParameters).to.deep.equal({
+          search: {}
+        });
+        expect(queryElements[0].count).to.equal(500);
+        expect(queryElements[0].field).to.equal('myAggregationField');
+        expect(queryElements[0].name).to.equal('myAggregationName');
+        expect(queryElements[0].sortOrder).to.equal('');
+        expect(queryElements[0].combineFunction).to.deep.equal(element.combineFunction);
+
+        expect(queryElements[1]).to.exist;
+        expect(queryElements[1].index).to.equal('myIndexName');
+        expect(queryElements[1].indexTypes).to.deep.equal(['myIndexType']);
+        expect(queryElements[1].matchAll).to.be.true;
+        expect(queryElements[1].processRequest).to.be.false;
+        expect(queryElements[1].queryBuilderConfig).to.deep.equal({
+          config: {}
+        });
+        expect(queryElements[1].searchParameters).to.deep.equal({});
+        expect(queryElements[1].count).to.equal(500);
+        expect(queryElements[1].field).to.equal('myAggregationField');
+        expect(queryElements[1].name).to.equal('myAggregationName');
+        expect(queryElements[1].sortOrder).to.equal('');
+        expect(queryElements[1].combineFunction).to.deep.equal(element.combineFunction);
+      });
+
+      test('does have elastic-error elements', function() {
+        var errorElements = document.querySelectorAll('elastic-error');
+        expect(errorElements[0]).to.exist;
+        expect(errorElements[1]).to.exist;
       });
 
       test('does have styled-dialog element', function() {
         expect(element.$$('styled-dialog')).to.exist;
         expect(element.$$('styled-dialog').fill).to.be.true;
-        expect(element.$$('styled-dialog').header).to.equal('My Dialog Header');
+        expect(element.$$('styled-dialog').header).to.equal('My Data');
         expect(element.$$('styled-dialog').opened).to.be.false;
       });
 
@@ -122,61 +170,213 @@ limitations under the License.
         expect(element.$$('aggregation-sort')).to.exist;
       });
 
-      test('does have aggregation-display element', function() {
-        expect(element.$$('aggregation-display')).to.exist;
-        expect(element.$$('aggregation-display').limit).to.equal(10);
-        expect(element.$$('aggregation-display').countProperty).to.equal('count');
-        expect(element.$$('aggregation-display').iconProperty).to.equal('icon');
-        expect(element.$$('aggregation-display').idProperty).to.equal('id');
-        expect(element.$$('aggregation-display').linkProperty).to.equal('link');
-        expect(element.$$('aggregation-display').styleClassProperty).to.equal('styleClass');
-        expect(element.$$('aggregation-display').textProperty).to.equal('text');
-        expect(element.$$('aggregation-display').headerDataName).to.equal('My Data');
-        expect(element.$$('aggregation-display').headerCountsName).to.equal('My Counts');
-        expect(element.$$('aggregation-display').showCheckboxes).to.be.true;
-        expect(element.$$('aggregation-display').checkboxName).to.equal('My Checkbox');
-        expect(element.$$('aggregation-display').selectedIds).to.deep.equal([]);
+      test('does have aggregation-display elements', function() {
+        var displayElements = document.querySelectorAll('aggregation-display');
+
+        expect(displayElements[0]).to.exist;
+        expect(displayElements[0].countProperty).to.equal('count');
+        expect(displayElements[0].iconProperty).to.equal('icon');
+        expect(displayElements[0].idProperty).to.equal('id');
+        expect(displayElements[0].linkProperty).to.equal('link');
+        expect(displayElements[0].styleClassProperty).to.equal('styleClass');
+        expect(displayElements[0].textProperty).to.equal('text');
+        expect(displayElements[0].limit).to.equal(500);
+        expect(displayElements[0].headerDataName).to.equal('Filtered My Data');
+        expect(displayElements[0].headerCountsName).to.equal('My Counts');
+        expect(displayElements[0].showCheckboxes).to.be.true;
+        expect(displayElements[0].checkboxName).to.equal('My Checkbox');
+        expect(displayElements[0].target).to.equal('_self');
+        expect(displayElements[0].errorMessage).to.equal('');
+        expect(displayElements[0].loading).to.be.false;
+        expect(displayElements[0].selectedIds).to.deep.equal([]);
+
+        expect(displayElements[1]).to.exist;
+        expect(displayElements[1].countProperty).to.equal('count');
+        expect(displayElements[1].iconProperty).to.equal('icon');
+        expect(displayElements[1].idProperty).to.equal('id');
+        expect(displayElements[1].linkProperty).to.equal('link');
+        expect(displayElements[1].styleClassProperty).to.equal('styleClass');
+        expect(displayElements[1].textProperty).to.equal('text');
+        expect(displayElements[1].limit).to.equal(500);
+        expect(displayElements[1].headerDataName).to.equal('Unfiltered My Data');
+        expect(displayElements[1].headerCountsName).to.equal('My Counts');
+        expect(displayElements[1].showCheckboxes).to.be.true;
+        expect(displayElements[1].checkboxName).to.equal('My Checkbox');
+        expect(displayElements[1].target).to.equal('_self');
+        expect(displayElements[1].errorMessage).to.equal('');
+        expect(displayElements[1].loading).to.be.false;
+        expect(displayElements[1].selectedIds).to.deep.equal([]);
+
+        expect(displayElements[2]).to.exist;
+        expect(displayElements[2].countProperty).to.equal('count');
+        expect(displayElements[2].iconProperty).to.equal('icon');
+        expect(displayElements[2].idProperty).to.equal('id');
+        expect(displayElements[2].linkProperty).to.equal('link');
+        expect(displayElements[2].styleClassProperty).to.equal('styleClass');
+        expect(displayElements[2].textProperty).to.equal('text');
+        expect(displayElements[2].limit).to.equal(500);
+        expect(displayElements[2].headerDataName).to.equal('Selected My Data');
+        expect(displayElements[2].headerCountsName).to.equal('My Counts');
+        expect(displayElements[2].showCheckboxes).to.be.true;
+        expect(displayElements[2].checkboxName).to.equal('My Checkbox');
+        expect(displayElements[2].target).to.equal('_self');
+        expect(displayElements[2].errorMessage).to.equal('');
+        expect(displayElements[2].loading).to.be.false;
+        expect(displayElements[2].selectedIds).to.deep.equal([]);
       });
 
-      test('open() does set limit to openedLimit=1000 and open dialog', function(done) {
+      test('open does open the dialog', function(done) {
         element.open();
 
         flush(function() {
           expect(element.$$('styled-dialog')).to.exist;
           expect(element.$$('styled-dialog').opened).to.be.true;
-          expect(element.limit).to.equal(1000);
           done();
         });
       });
 
-      test('open() does set limit to openedLimit=100 and open dialog', function(done) {
-        element.openedLimit = 100;
-        element.open();
+      test('_createSelectedFunction does return the correct function', function() {
+        expect(element._createSelectedFunction).to.be.a('Function');
+        var callback = element._createSelectedFunction();
+        expect(callback).to.be.a('Function');
+        expect(callback([])).to.deep.equal([]);
+        expect(callback([], [1])).to.deep.equal([]);
 
-        flush(function() {
-          expect(element.$$('styled-dialog')).to.exist;
-          expect(element.$$('styled-dialog').opened).to.be.true;
-          expect(element.limit).to.equal(100);
-          done();
-        });
+        expect(callback([{
+          id: 2
+        }], [])).to.deep.equal([]);
+
+        expect(callback([{
+          id: 2
+        }], [1])).to.deep.equal([]);
+
+        expect(callback([{
+          id: 2
+        }], [2])).to.deep.equal([{
+          id: 2
+        }]);
+
+        expect(callback([{
+          id: 2
+        }], [1, 2])).to.deep.equal([{
+          id: 2
+        }]);
+
+        expect(callback([{
+          id: 2
+        }, {
+          id: 3
+        }], [1, 2])).to.deep.equal([{
+          id: 2
+        }]);
+
+        expect(callback([{
+          id: 2
+        }, {
+          id: 3
+        }], [2, 3])).to.deep.equal([{
+          id: 2
+        }, {
+          id: 3
+        }]);
       });
 
-      test('_getLinkStyleClass() does return correctly', function() {
-        expect(element._getLinkStyleClass).to.be.a('Function');
-        expect(element._getLinkStyleClass(0, 0)).to.equal('');
-        expect(element._getLinkStyleClass(0, 1)).to.equal('');
-        expect(element._getLinkStyleClass(1, 1)).to.equal('');
-        expect(element._getLinkStyleClass(1, 2)).to.equal('');
-        expect(element._getLinkStyleClass(1, 0)).to.equal('disabled');
-        expect(element._getLinkStyleClass(2, 1)).to.equal('disabled');
+      test('_createSelectedFunction does use the idProperty', function() {
+        var callback = element._createSelectedFunction();
+
+        expect(callback([{
+          myId: 1
+        }], [1])).to.deep.equal([]);
+
+        element.idProperty = 'myId';
+
+        expect(callback([{
+          myId: 1
+        }], [1])).to.deep.equal([{
+          myId: 1
+        }]);
       });
 
-      test('_showLink() does return correctly', function() {
-        expect(element._showLink).to.be.a('Function');
-        expect(element._showLink(0, false)).to.be.false;
-        expect(element._showLink(1, false)).to.be.true;
-        expect(element._showLink(0, true)).to.be.false;
-        expect(element._showLink(1, true)).to.be.false;
+      test('_createObject does return an empty object', function() {
+        expect(element._createObject).to.be.a('Function');
+        expect(element._createObject()).to.deep.equal({});
+      });
+
+      test('_getTitleAndCount does return the correct strings', function() {
+        expect(element._getTitleAndCount).to.be.a('Function');
+        expect(element._getTitleAndCount('foobar')).to.equal('foobar');
+        expect(element._getTitleAndCount('foobar', 10)).to.equal('foobar');
+        expect(element._getTitleAndCount('foobar', 10, 1)).to.equal('foobar (1)');
+        expect(element._getTitleAndCount('foobar', 10, 2)).to.equal('foobar (2)');
+        expect(element._getTitleAndCount('foobar', 10, 10)).to.equal('foobar (Top 10)');
+        expect(element._getTitleAndCount('foobar', 10, 11)).to.equal('foobar (Top 10)');
+      });
+
+      test('changing _opened to false does not update _runQueries or the facet-aggregation-query elements', function() {
+        element._opened = false;
+        expect(element._runQueries).to.be.false;
+        var queryElements = document.querySelectorAll('facet-aggregation-query');
+        expect(queryElements[0].processRequest).to.be.false;
+        expect(queryElements[1].processRequest).to.be.false;
+      });
+
+      test('changing _opened to true does update _runQueries and the facet-aggregation-query elements', function() {
+        element._opened = true;
+        expect(element._runQueries).to.be.true;
+        var queryElements = document.querySelectorAll('facet-aggregation-query');
+        expect(queryElements[0].processRequest).to.be.true;
+        expect(queryElements[1].processRequest).to.be.true;
+      });
+
+      test('changing _dataUnfilteredList and selectedIds does update _dataSelectedList and the aggregation-display elements', function() {
+        element._dataUnfilteredList = [{
+          id: 1
+        }, {
+          id: 2
+        }];
+        element.selectedIds = [1];
+
+        expect(element._dataSelectedList).to.deep.equal([{
+          id: 1
+        }]);
+
+        var displayElements = document.querySelectorAll('aggregation-display');
+
+        expect(displayElements[0].data).to.deep.equal([]);
+        expect(displayElements[1].data).to.deep.equal([{
+          id: 1
+        }, {
+          id: 2
+        }]);
+        expect(displayElements[2].data).to.deep.equal([{
+          id: 1
+        }]);
+
+        expect(displayElements[0].headerDataName).to.equal('Filtered My Data');
+        expect(displayElements[1].headerDataName).to.equal('Unfiltered My Data (2)');
+        expect(displayElements[2].headerDataName).to.equal('Selected My Data (1)');
+
+        expect(displayElements[0].selectedIds).to.deep.equal([1]);
+        expect(displayElements[1].selectedIds).to.deep.equal([1]);
+        expect(displayElements[2].selectedIds).to.deep.equal([1]);
+      });
+
+      test('changing _dataFilteredList does update the aggregation-display elements', function() {
+        element._dataFilteredList = [{
+          id: 1
+        }];
+
+        var displayElements = document.querySelectorAll('aggregation-display');
+
+        expect(displayElements[0].data).to.deep.equal([{
+          id: 1
+        }]);
+        expect(displayElements[1].data).to.deep.equal([]);
+        expect(displayElements[2].data).to.deep.equal([]);
+
+        expect(displayElements[0].headerDataName).to.equal('Filtered My Data (1)');
+        expect(displayElements[1].headerDataName).to.equal('Unfiltered My Data');
+        expect(displayElements[2].headerDataName).to.equal('Selected My Data');
       });
     });
   </script>

@@ -1,14 +1,19 @@
 # aggregation-dialog
 
-A Polymer Element showing an aggregation-display element in a styled-dialog that automatically changes the data limit when opened.
+A Polymer Element showing a set of aggregation-display elements in a styled-dialog.
 
 ### Example
 ```html
 <aggregation-dialog
-  show-checkboxes
-  data="[[data]]"
-  dialog-header="My Data"
-  limit="{{limit}}"
+  client="[[client]]"
+  index-name="indexName"
+  index-types='["indexType"]'
+  process-request="[[processRequest]]"
+  query-builder-config="[[queryBuilderConfig]]"
+  search-parameters="[[searchParameters]]"
+  aggregation-field="field"
+  aggregation-name="aggregation"
+  combine-function="[[combineFunction]]"
   order-by="{{order}}"
   selected-ids="{{selected}}">
 </aggregation-dialog>

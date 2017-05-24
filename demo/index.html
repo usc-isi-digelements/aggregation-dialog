@@ -25,29 +25,28 @@ limitations under the License.
 <body unresolved>
   <template is="dom-bind" id="demo">
     <h3>Inputs</h3>
-    <p>Dialog Header: My Dialog</p>
+    <p>Limit: 500</p>
     <p>Header Counts Name: My Counts</p>
     <p>Header Data Name: My Data</p>
     <p>Show Checkboxes: true</p>
-    <p>Limit: 2</p>
-    <p>Opened Limit: 1000</p>
     <p>Checkbox Name: My Checkbox</p>
-    <p>Data: [[stringData]]</p>
+    <p>Target: _blank</p>
+
+    <h3>Data</h3>
+    <p>Filtered: [[filteredDataString]]</p>
+    <p>Unfiltered: [[unfilteredDataString]]</p>
 
     <h3>Outputs</h3>
-    <p>Limit: [[limit]]</p>
     <p>Order By: [[order]]</p>
     <p>Selected Ids:  [[selected]]</p>
 
     <h3>Element</h3>
-    <aggregation-dialog
-      dialog-header="My Dialog"
+    <aggregation-dialog id="dialog"
       header-counts-name="My Counts"
       header-data-name="My Data"
       show-checkboxes
       checkbox-name="My Checkbox"
-      data="[[data]]"
-      limit="{{limit}}"
+      target="_blank"
       order-by="{{order}}"
       selected-ids="{{selected}}">
     </aggregation-dialog>
@@ -56,8 +55,17 @@ limitations under the License.
   <script>
     (function(document) {
       var demo = document.querySelector('#demo');
-      demo.limit = 2;
-      demo.data = [{
+      demo.render();
+      var dialog = demo.$.dialog;
+      dialog._dataFilteredList = [{
+        count: 5,
+        icon: 'icons:polymer',
+        id: 2,
+        link: 'http://nextcentury.com',
+        max: 10,
+        text: 'Bar 2'
+      }];
+      dialog._dataUnfilteredList = [{
         count: 10,
         icon: 'icons:polymer',
         id: 1,
@@ -93,7 +101,8 @@ limitations under the License.
         max: 10,
         text: 'Bar 5'
       }];
-      demo.stringData = JSON.stringify(demo.data);
+      demo.filteredDataString = JSON.stringify(dialog._dataFilteredList);
+      demo.unfilteredDataString = JSON.stringify(dialog._dataUnfilteredList);
     })(document);
   </script>
 </body>

@@ -17,18 +17,29 @@ limitations under the License.
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../aggregation-display/aggregation-display.html">
 <link rel="import" href="../aggregation-sort/aggregation-sort.html">
+<link rel="import" href="../elastic-error/elastic-error.html">
+<link rel="import" href="../facet-aggregation-query/facet-aggregation-query.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../json-combine/json-combine.html">
 <link rel="import" href="../styled-dialog/styled-dialog.html">
 
 <!--
-A Polymer Element showing an aggregation-display element in a styled-dialog that automatically changes the data limit when opened.
+A Polymer Element showing a set of aggregation-display elements in a styled-dialog.
 
 ### Example
 ```html
 <aggregation-dialog
-  show-checkboxes
-  data="[[data]]"
-  dialog-header="My Data"
-  limit="{{limit}}"
+  client="[[client]]"
+  index-name="indexName"
+  index-types='["indexType"]'
+  process-request="[[processRequest]]"
+  query-builder-config="[[queryBuilderConfig]]"
+  search-parameters="[[searchParameters]]"
+  aggregation-field="field"
+  aggregation-name="aggregation"
+  combine-function="[[combineFunction]]"
   order-by="{{order}}"
   selected-ids="{{selected}}">
 </aggregation-dialog>
@@ -63,35 +74,158 @@ A Polymer Element showing an aggregation-display element in a styled-dialog that
       }
 
       styled-dialog ::content .data {
-        /* Height of 24 rows. */
-        max-height: 560px;
+        max-height: 440px;
+      }
+
+      styled-dialog iron-icon {
+        --iron-icon: {
+          min-width: 24px;
+        }
+      }
+
+      .columns > *:not(:last-child) {
+        margin-right: 10px;
+      }
+
+      .help {
+        /* Height of 5 lines. */
+        min-height: 100px;
       }
     </style>
 
-    <template is="dom-if" if="[[_showLink(data.length, loading)]]">
-      <span class$="link [[_getLinkStyleClass(limit, data.length)]]" on-tap="open">View More</span>
+    <template is="dom-if" if="[[!hide]]">
+      <span class="link" on-tap="open">View More</span>
     </template>
 
-    <styled-dialog fill header="[[dialogHeader]]">
+    <facet-aggregation-query
+      client="[[client]]"
+      index="[[indexName]]"
+      index-types="[[indexTypes]]"
+      match-all="[[matchAll]]"
+      process-request="[[_runQueries]]"
+      query-builder-config="[[queryBuilderConfig]]"
+      search-parameters="[[searchParameters]]"
+      count="[[limit]]"
+      field="[[aggregationField]]"
+      name="[[aggregationName]]"
+      sort-order="[[orderBy]]"
+      combine-function="[[combineFunction]]"
+      last-error="{{_errorFilteredList}}"
+      loading="{{_loadingFilteredList}}"
+      result-list="{{_dataFilteredList}}">
+    </facet-aggregation-query>
+
+    <elastic-error error="[[_errorFilteredList]]" message="{{_errorMessageFilteredList}}"></elastic-error>
+
+    <facet-aggregation-query
+      client="[[client]]"
+      index="[[indexName]]"
+      index-types="[[indexTypes]]"
+      match-all
+      process-request="[[_runQueries]]"
+      query-builder-config="[[queryBuilderConfig]]"
+      search-parameters="[[_createObject()]]"
+      count="[[limit]]"
+      field="[[aggregationField]]"
+      name="[[aggregationName]]"
+      sort-order="[[orderBy]]"
+      combine-function="[[combineFunction]]"
+      last-error="{{_errorUnfilteredList}}"
+      loading="{{_loadingUnfilteredList}}"
+      result-list="{{_dataUnfilteredList}}">
+    </facet-aggregation-query>
+
+    <elastic-error error="[[_errorUnfilteredList]]" message="{{_errorMessageUnfilteredList}}"></elastic-error>
+
+    <json-combine
+      data-in1="[[_dataUnfilteredList]]"
+      data-in2="[[selectedIds]]"
+      data-out="{{_dataSelectedList}}"
+      combine-function="[[_createSelectedFunction()]]">
+    </json-combine>
+
+    <styled-dialog fill header="[[headerDataName]]" opened="{{_opened}}">
       <aggregation-sort order-by="{{orderBy}}"></aggregation-sort>
 
-      <aggregation-display
-        limit="[[limit]]"
-        count-property="[[countProperty]]"
-        icon-property="[[iconProperty]]"
-        id-property="[[idProperty]]"
-        link-property="[[linkProperty]]"
-        style-class-property="[[styleClassProperty]]"
-        text-property="[[textProperty]]"
-        data="[[data]]"
-        header-data-name="[[headerDataName]]"
-        header-counts-name="[[headerCountsName]]"
-        show-checkboxes="[[showCheckboxes]]"
-        checkbox-name="[[checkboxName]]"
-        error-message="[[errorMessage]]"
-        loading="[[loading]]"
-        selected-ids="{{selectedIds}}">
-      </aggregation-display>
+      <div class="columns layout horizontal flex">
+        <aggregation-display class="flex"
+          count-property="[[countProperty]]"
+          icon-property="[[iconProperty]]"
+          id-property="[[idProperty]]"
+          link-property="[[linkProperty]]"
+          style-class-property="[[styleClassProperty]]"
+          text-property="[[textProperty]]"
+          data="[[_dataFilteredList]]"
+          limit="[[limit]]"
+          header-data-name="Filtered [[_getTitleAndCount(headerDataName, limit, _dataFilteredList.length)]]"
+          header-counts-name="[[headerCountsName]]"
+          show-checkboxes="[[showCheckboxes]]"
+          checkbox-name="[[checkboxName]]"
+          target="[[target]]"
+          error-message="[[_errorMessageFilteredList]]"
+          loading="[[_loadingFilteredList]]"
+          selected-ids="{{selectedIds}}">
+        </aggregation-display>
+
+        <aggregation-display class="flex"
+          count-property="[[countProperty]]"
+          icon-property="[[iconProperty]]"
+          id-property="[[idProperty]]"
+          link-property="[[linkProperty]]"
+          style-class-property="[[styleClassProperty]]"
+          text-property="[[textProperty]]"
+          data="[[_dataUnfilteredList]]"
+          limit="[[limit]]"
+          header-data-name="Unfiltered [[_getTitleAndCount(headerDataName, limit, _dataUnfilteredList.length)]]"
+          header-counts-name="[[headerCountsName]]"
+          show-checkboxes="[[showCheckboxes]]"
+          checkbox-name="[[checkboxName]]"
+          target="[[target]]"
+          error-message="[[_errorMessageUnfilteredList]]"
+          loading="[[_loadingUnfilteredList]]"
+          selected-ids="{{selectedIds}}">
+        </aggregation-display>
+
+        <aggregation-display class="flex"
+          count-property="[[countProperty]]"
+          icon-property="[[iconProperty]]"
+          id-property="[[idProperty]]"
+          link-property="[[linkProperty]]"
+          style-class-property="[[styleClassProperty]]"
+          text-property="[[textProperty]]"
+          data="[[_dataSelectedList]]"
+          limit="[[limit]]"
+          header-data-name="Selected [[_getTitleAndCount(headerDataName, limit, _dataSelectedList.length)]]"
+          header-counts-name="[[headerCountsName]]"
+          show-checkboxes="[[showCheckboxes]]"
+          checkbox-name="[[checkboxName]]"
+          target="[[target]]"
+          error-message="[[_errorMessageUnfilteredList]]"
+          loading="[[_loadingUnfilteredList]]"
+          selected-ids="{{selectedIds}}">
+        </aggregation-display>
+      </div>
+
+      <div class="columns help layout horizontal">
+        <div class="layout horizontal flex">
+          <iron-icon class="styled-dialog-right-space" icon="help"></iron-icon>
+          <div class="styled-dialog-text">
+            The <strong>filtered</strong> list shows the terms that co-occur with your selected search terms.  This is the same list that is shown in the facet sidebar.
+          </div>
+        </div>
+        <div class="layout horizontal flex">
+          <iron-icon class="styled-dialog-right-space" icon="help"></iron-icon>
+          <div class="styled-dialog-text">
+            The <strong>unfiltered</strong> list ignores your selected search terms and shows all of the terms in the data.  Limited to the top [[limit]] terms for faster performance.
+          </div>
+        </div>
+        <div class="layout horizontal flex">
+          <iron-icon class="styled-dialog-right-space" icon="help"></iron-icon>
+          <div class="styled-dialog-text">
+            The <strong>selected</strong> list shows your selected search terms.
+          </div>
+        </div>
+      </div>
     </styled-dialog>
   </template>
 
@@ -103,12 +237,101 @@ A Polymer Element showing an aggregation-display element in a styled-dialog that
         /**
          * (Required)
          *
-         * The aggregation results.
+         * The elasticsearch client object.
+         *
+         * @type {Object}
+         */
+        client: {
+          type: Object
+        },
+
+        /**
+         * (Required)
+         *
+         * The elasticsearch index to query.
+         *
+         * @type {String}
+         */
+        indexName: {
+          type: String
+        },
+
+        /**
+         * (Required)
+         *
+         * The elasticsearch index types to query.
          *
          * @type {Array}
          */
-        data: {
+        indexTypes: {
           type: Array
+        },
+
+        /**
+         * (Required)
+         *
+         * Whether or not all properties are ready to create the elasticsearch query.
+         *
+         * @type {Boolean}
+         */
+        processRequest: {
+          type: Boolean
+        },
+
+        /**
+         * (Required)
+         *
+         * Query config object passed to `query-builder` with unique keys from `searchParameters` mapped to config objects containing
+         * {String} field and (Optional) {String} type.  Default `type` is "string".  Supported `type` options are "string", "date". 
+         *
+         * @type {Object}
+         */
+        queryBuilderConfig: {
+          type: Object
+        },
+
+        /**
+         * (Required)
+         *
+         * The parameters for the query.
+         *
+         * @type {Object}
+         */
+        searchParameters: {
+          type: Object
+        },
+
+        /**
+         * (Required)
+         *
+         * The aggregation field.
+         *
+         * @type {String}
+         */
+        aggregationField: {
+          type: String
+        },
+
+        /**
+         * (Required)
+         *
+         * The aggregation name.
+         *
+         * @type {String}
+         */
+        aggregationName: {
+          type: String
+        },
+
+        /**
+         * (Required)
+         *
+         * The query results transform function.
+         *
+         * @type {Object}
+         */
+        combineFunction: {
+          type: Object
         },
 
         /**
@@ -192,45 +415,6 @@ A Polymer Element showing an aggregation-display element in a styled-dialog that
         /**
          * (Optional)
          *
-         * The dialog header.
-         *
-         * @type {String}
-         * @default 'Data'
-         */
-        dialogHeader: {
-          type: String,
-          value: 'Data'
-        },
-
-        /**
-         * (Optional)
-         *
-         * The error message.
-         *
-         * @type {String}
-         * @default ''
-         */
-        errorMessage: {
-          type: String,
-          value: ''
-        },
-
-        /**
-         * (Optional)
-         *
-         * Whether the aggregation is loading.
-         *
-         * @type {Boolean}
-         * @default false
-         */
-        loading: {
-          type: Boolean,
-          value: false
-        },
-
-        /**
-         * (Optional)
-         *
          * The header data name.
          *
          * @type {String}
@@ -238,7 +422,7 @@ A Polymer Element showing an aggregation-display element in a styled-dialog that
          */
         headerDataName: {
           type: String,
-          value: ''
+          value: 'Data'
         },
 
         /**
@@ -251,7 +435,7 @@ A Polymer Element showing an aggregation-display element in a styled-dialog that
          */
         headerCountsName: {
           type: String,
-          value: ''
+          value: 'Counts'
         },
 
         /**
@@ -283,34 +467,60 @@ A Polymer Element showing an aggregation-display element in a styled-dialog that
         /**
          * (Optional)
          *
-         * The number of aggregation results to show once the dialog is opened.
+         * Whether to hide the button to open the dialog.
          *
-         * @type {Number}
-         * @default 1000
+         * @type {Boolean}
+         * @default false
          */
-        openedLimit: {
-          type: Number,
-          value: 1000
+        hide: {
+          type: Boolean,
+          value: false
         },
 
         /**
-         * (Output)
+         * (Optional)
          *
-         * The number of aggregation results to show in the bar chart.
+         * The max number of aggregation query results to show in the bar chart.
          *
          * @type {Number}
-         * @default 10
+         * @default 500
          */
         limit: {
           notify: true,
           type: Number,
-          value: 10
+          value: 500
+        },
+
+        /**
+         * (Optional)
+         *
+         * Whether or not to use a match all query when searchParameters are empty.
+         *
+         * @type {Boolean}
+         * @default false
+         */
+        matchAll: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * (Optional)
+         *
+         * The target page of the links.
+         *
+         * @type {String}
+         * @default '_self'
+         */
+        target: {
+          type: String,
+          value: '_self'
         },
 
         /**
          * (Output)
          *
-         * The elasticsearch aggregation query order field.
+         * The elasticsearch aggregation query order.
          *
          * @type {String}
          * @default ''
@@ -335,38 +545,176 @@ A Polymer Element showing an aggregation-display element in a styled-dialog that
           value: function() {
             return [];
           }
+        },
+
+        /**
+         * The data to show in the filtered bar chart.
+         * 
+         * @type {Array}
+         * @private
+         */
+        _dataFilteredList: {
+          type: Array
+        },
+
+        /**
+         * The data to show in the selected bar chart.
+         * 
+         * @type {Array}
+         * @private
+         */
+        _dataSelectedList: {
+          type: Array
+        },
+
+        /**
+         * The data to show in the unfiltered bar chart.
+         * 
+         * @type {Array}
+         * @private
+         */
+        _dataUnfilteredList: {
+          type: Array
+        },
+
+        /**
+         * The elasticsearch error of the filtered list aggregation.
+         *
+         * @type {Object}
+         * @private
+         */
+        _errorFilteredList: {
+          type: Object
+        },
+
+        /**
+         * The elasticsearch error of the unfiltered list aggregation.
+         *
+         * @type {Object}
+         * @private
+         */
+        _errorUnfilteredList: {
+          type: Object
+        },
+
+        /**
+         * The error message of the filtered list aggregation.
+         *
+         * @type {String}
+         * @private
+         */
+        _errorMessageFilteredList: {
+          type: String
+        },
+
+        /**
+         * The error message of the unfiltered list aggregation.
+         *
+         * @type {String}
+         * @private
+         */
+        _errorMessageUnfilteredList: {
+          type: String
+        },
+
+        /**
+         * Whether the filtered list aggregation is loading.
+         *
+         * @type {Boolean}
+         * @private
+         */
+        _loadingFilteredList: {
+          type: Boolean
+        },
+
+        /**
+         * Whether the unfiltered list aggregation is loading.
+         *
+         * @type {Boolean}
+         * @private
+         */
+        _loadingUnfilteredList: {
+          type: Boolean
+        },
+
+        /**
+         * Whether the dialog is opened.
+         *
+         * @type {Boolean}
+         * @private
+         */
+        _opened: {
+          observer: '_handleOpened',
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * Whether to run the queries (wait until after the dialog is first opened).
+         *
+         * @type {Boolean}
+         * @default false
+         * @private
+         */
+        _runQueries: {
+          type: Boolean,
+          value: false
         }
       },
 
       /**
-       * Returns the link style class.
+       * Returns the selected data transform function.
        *
-       * @param {Number} limit
-       * @param {Number} count
-       * @return {String}
+       * @return {Function}
        * @private
        */
-      _getLinkStyleClass: function(limit, count) {
-        return limit && limit > count ? 'disabled' : '';
+      _createSelectedFunction: function() {
+        var self = this;
+        return function(data, selected) {
+          return data.filter(function(item) {
+            return selected.indexOf(item[self.idProperty]) >= 0;
+          });
+        };
       },
 
       /**
-       * Return whether to show the link.
+       * Returns an empty object because the query doesn't run if the empty object is hard-coded in the property (for unknown reasons).
        *
-       * @param {Number} count
-       * @param {Boolean} loading
-       * @return {Boolean}
+       * @return {Object}
        * @private
        */
-      _showLink: function(count, loading) {
-        return !!count && !loading;
+      _createObject: function() {
+        return {};
+      },
+
+      /**
+       * Returns correct text to display as the header of the facet section based on the parameters.
+       *
+       * @param {String} title
+       * @param {Number} limit
+       * @param {Number} count
+       * @return {String} header text
+       * @private
+       */
+      _getTitleAndCount: function(title, limit, count) {
+        return title + (count ? (count >= limit ? ' (Top ' + limit + ')' : ' (' + count + ')') : '');
+      },
+
+      /**
+       * Handles behavior whenever the opened status of the dialog is changed.
+       *
+       * @private
+       */
+      _handleOpened: function() {
+        if(this._opened) {
+          this.set('_runQueries', true);
+        }
       },
 
       /**
        * Set the aggregation count to 0 and open the dialog.
        */
       open: function() {
-        this.set('limit', this.openedLimit);
         this.$$('styled-dialog').open();
       }
     });
