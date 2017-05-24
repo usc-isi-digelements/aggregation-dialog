@@ -138,7 +138,7 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
     <elastic-error error="[[_errorUnfilteredList]]" message="{{_errorMessageUnfilteredList}}"></elastic-error>
 
     <json-combine
-      data-in1="[[_createArrayUnion(_dataFilteredList, _dataUnfilteredList, idProperty)]]"
+      data-in1="[[_createDataSet(_dataFilteredList, _dataUnfilteredList, idProperty, textProperty)]]"
       data-in2="[[selectedIds]]"
       data-out="{{_dataSelectedList}}"
       combine-function="[[_createSelectedFunction()]]">
@@ -663,25 +663,30 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
       },
 
       /**
-       * Returns the union of the two given arrays.
+       * Returns the set of the two given data lists.
        *
        * @param {Array} one
        * @param {Array} two
        * @param {String} idProperty
+       * @param {String} textProperty
        * @return {Array}
        * @private
        */
-      _createArrayUnion: function(one, two, idProperty) {
-        var data = [];
+      _createDataSet: function(one, two, idProperty, textProperty) {
+        var set = [];
         var ids = [];
 
+        var createId = function(item) {
+          return item[idProperty] + '_' + (textProperty && item[textProperty] ? item[textProperty] : '');
+        };
+
         one.forEach(function(item) {
-          data.push(item);
-          ids.push(item[idProperty])
+          set.push(item);
+          ids.push(createId(item));
         });
 
-        return data.concat(two.filter(function(item) {
-          return ids.indexOf(item[idProperty]) < 0;
+        return set.concat(two.filter(function(item) {
+          return ids.indexOf(createId(item)) < 0;
         }).map(function(item) {
           return item;
         }));
@@ -710,18 +715,28 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
             return item[self.idProperty];
           });
 
-          return selectedIds.map(function(id) {
-            var dataIndex = dataIds.indexOf(id);
-            if(dataIndex >= 0) {
-              return data[dataIndex];
+          var selectedData = [];
+
+          selectedIds.forEach(function(selectedId) {
+            var exists = false;
+            dataIds.forEach(function(dataId, dataIndex) {
+              if(dataId === selectedId) {
+                selectedData.push(data[dataIndex]);
+                exists = true;
+              }
+            });
+
+            if(!exists) {
+              var selectedItem = {};
+              selectedItem[self.countProperty] = 0;
+              selectedItem[self.idProperty] = selectedId;
+              selectedItem[self.textProperty] = selectedId;
+              selectedData.push(selectedItem);
             }
-            var selectedItem = {};
-            selectedItem[self.countProperty] = 0;
-            selectedItem[self.idProperty] = id;
-            selectedItem[self.textProperty] = id;
-            return selectedItem;
-          }).sort(function(a, b) {
-            var diff = b[self.countProperty] - a[self.countProperty];
+          });
+
+          return selectedData.sort(function(a, b) {
+            var diff = (b[self.countProperty] || 0) - (a[self.countProperty] || 0);
 
             // Sort alphabetically if orderBy is _term or if the counts are equal.
             if(self.orderBy === '_term' || !diff) {

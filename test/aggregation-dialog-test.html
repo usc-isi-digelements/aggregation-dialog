@@ -235,41 +235,49 @@ limitations under the License.
         });
       });
 
-      test('_createArrayUnion does return an array', function() {
-        expect(element._createArrayUnion).to.be.a('Function');
-        expect(element._createArrayUnion([], [], 'id')).to.deep.equal([]);
+      test('_createDataSet given data with ID does return the correct array', function() {
+        expect(element._createDataSet).to.be.a('Function');
+        expect(element._createDataSet([], [], 'id', 'text')).to.deep.equal([]);
 
-        expect(element._createArrayUnion([{
+        expect(element._createDataSet([{
           id: 1
-        }], [], 'id')).to.deep.equal([{
+        }], [], 'id', 'text')).to.deep.equal([{
           id: 1
         }]);
 
-        expect(element._createArrayUnion([], [{
+        expect(element._createDataSet([{
+          id: 1,
+          key: 'value'
+        }], [], 'id', 'text')).to.deep.equal([{
+          id: 1,
+          key: 'value'
+        }]);
+
+        expect(element._createDataSet([], [{
           id: 2
-        }], 'id')).to.deep.equal([{
+        }], 'id', 'text')).to.deep.equal([{
           id: 2
         }]);
 
-        expect(element._createArrayUnion([{
+        expect(element._createDataSet([{
           id: 1
         }], [{
           id: 2
-        }], 'id')).to.deep.equal([{
+        }], 'id', 'text')).to.deep.equal([{
           id: 1
         }, {
           id: 2
         }]);
 
-        expect(element._createArrayUnion([{
+        expect(element._createDataSet([{
           id: 1
         }], [{
           id: 1
-        }], 'id')).to.deep.equal([{
+        }], 'id', 'text')).to.deep.equal([{
           id: 1
         }]);
 
-        expect(element._createArrayUnion([{
+        expect(element._createDataSet([{
           id: 1
         }, {
           id: 2
@@ -277,7 +285,7 @@ limitations under the License.
           id: 1
         }, {
           id: 3
-        }], 'id')).to.deep.equal([{
+        }], 'id', 'text')).to.deep.equal([{
           id: 1
         }, {
           id: 2
@@ -285,12 +293,138 @@ limitations under the License.
           id: 3
         }]);
 
-        expect(element._createArrayUnion([{
+        expect(element._createDataSet([{
           myId: 1
         }], [{
           myId: 1
-        }], 'myId')).to.deep.equal([{
+        }], 'myId', 'myText')).to.deep.equal([{
           myId: 1
+        }]);
+
+        expect(element._createDataSet([{
+          myId: 1
+        }], [{
+          myId: 2
+        }], 'myId', 'myText')).to.deep.equal([{
+          myId: 1
+        }, {
+          myId: 2
+        }]);
+      });
+
+      test('_createDataSet given data with ID and text does return the correct array', function() {
+        expect(element._createDataSet).to.be.a('Function');
+        expect(element._createDataSet([], [], 'id', 'text')).to.deep.equal([]);
+
+        expect(element._createDataSet([{
+          id: 1,
+          text: 'a'
+        }], [], 'id', 'text')).to.deep.equal([{
+          id: 1,
+          text: 'a'
+        }]);
+
+        expect(element._createDataSet([], [{
+          id: 2,
+          text: 'a'
+        }], 'id', 'text')).to.deep.equal([{
+          id: 2,
+          text: 'a'
+        }]);
+
+        expect(element._createDataSet([{
+          id: 1,
+          text: 'a'
+        }], [{
+          id: 2,
+          text: 'a'
+        }], 'id', 'text')).to.deep.equal([{
+          id: 1,
+          text: 'a'
+        }, {
+          id: 2,
+          text: 'a'
+        }]);
+
+        expect(element._createDataSet([{
+          id: 1,
+          text: 'a'
+        }], [{
+          id: 1,
+          text: 'a'
+        }], 'id', 'text')).to.deep.equal([{
+          id: 1,
+          text: 'a'
+        }]);
+
+        expect(element._createDataSet([{
+          id: 1,
+          text: 'a'
+        }], [{
+          id: 1,
+          text: 'b'
+        }], 'id', 'text')).to.deep.equal([{
+          id: 1,
+          text: 'a'
+        }, {
+          id: 1,
+          text: 'b'
+        }]);
+
+        expect(element._createDataSet([{
+          id: 1,
+          text: 'a'
+        }, {
+          id: 1,
+          text: 'b'
+        }, {
+          id: 2
+        }], [{
+          id: 1,
+          text: 'a'
+        }, {
+          id: 1,
+          text: 'c'
+        }, {
+          id: 3
+        }], 'id', 'text')).to.deep.equal([{
+          id: 1,
+          text: 'a'
+        }, {
+          id: 1,
+          text: 'b'
+        }, {
+          id: 2
+        }, {
+          id: 1,
+          text: 'c'
+        }, {
+          id: 3
+        }]);
+
+        expect(element._createDataSet([{
+          myId: 1,
+          myText: 'a'
+        }], [{
+          myId: 1,
+          myText: 'a'
+        }], 'myId', 'myText')).to.deep.equal([{
+          myId: 1,
+          myText: 'a'
+        }]);
+
+        expect(element._createDataSet([{
+          myId: 1,
+          myText: 'a'
+        }], [{
+          myId: 1,
+          myText: 'b'
+        }], 'myId', 'myText')).to.deep.equal([{
+          myId: 1,
+          myText: 'a'
+        }, {
+          myId: 1,
+          myText: 'b'
         }]);
       });
 
@@ -335,18 +469,6 @@ limitations under the License.
           id: 1
         }, {
           id: 2
-        }]);
-      });
-
-      test('_createSelectedFunction does use the idProperty', function() {
-        var callback = element._createSelectedFunction();
-
-        element.idProperty = 'myId';
-
-        expect(callback([{
-          myId: 1
-        }], [1])).to.deep.equal([{
-          myId: 1
         }]);
       });
 
@@ -425,6 +547,89 @@ limitations under the License.
           myCount: 0,
           myId: 1,
           myText: 1
+        }]);
+      });
+
+      test('_createSelectedFunction does add all items from the data with IDs matching the selected IDs', function() {
+        var callback = element._createSelectedFunction();
+
+        expect(callback([{
+          id: 1,
+          text: 'a'
+        }, {
+          id: 1,
+          text: 'b'
+        }], [1])).to.deep.equal([{
+          id: 1,
+          text: 'a'
+        }, {
+          id: 1,
+          text: 'b'
+        }]);
+      });
+
+      test('_createSelectedFunction does use the idProperty', function() {
+        var callback = element._createSelectedFunction();
+
+        // Expect auto-generated items.
+        expect(callback([{
+          myId: 1
+        }], [1])).to.deep.equal([{
+          count: 0,
+          id: 1,
+          text: 1
+        }]);
+
+        element.idProperty = 'myId';
+
+        expect(callback([{
+          myId: 1
+        }], [1])).to.deep.equal([{
+          myId: 1
+        }]);
+      });
+
+      test('_createSelectedFunction does use the textProperty', function() {
+        var callback = element._createSelectedFunction();
+
+        element.orderBy = '_term';
+
+        expect(callback([{
+          id: 1,
+          myText: 'b'
+        }, {
+          id: 2,
+          myText: 'a'
+        }], [1, 2, 3])).to.deep.equal([{
+          id: 1,
+          myText: 'b'
+        }, {
+          id: 2,
+          myText: 'a'
+        }, {
+          count: 0,
+          id: 3,
+          text: 3
+        }]);
+
+        element.textProperty = 'myText';
+
+        expect(callback([{
+          id: 1,
+          myText: 'b'
+        }, {
+          id: 2,
+          myText: 'a'
+        }], [1, 2, 3])).to.deep.equal([{
+          id: 2,
+          myText: 'a'
+        }, {
+          id: 1,
+          myText: 'b'
+        }, {
+          count: 0,
+          id: 3,
+          myText: 3
         }]);
       });
 
@@ -637,6 +842,17 @@ limitations under the License.
         }];
         element.selectedIds = [1, 2];
 
+        // Expect auto-generated items.
+        expect(element._dataSelectedList).to.deep.equal([{
+          count: 0,
+          id: 1,
+          text: 1
+        }, {
+          count: 0,
+          id: 2,
+          text: 2
+        }]);
+
         element.idProperty = 'myId';
 
         expect(element._dataSelectedList).to.deep.equal([{
@@ -666,6 +882,59 @@ limitations under the License.
         expect(displayElements[0].selectedIds).to.deep.equal([1, 2]);
         expect(displayElements[1].selectedIds).to.deep.equal([1, 2]);
         expect(displayElements[2].selectedIds).to.deep.equal([1, 2]);
+      });
+
+      test('changing textProperty does update _dataSelectedList and the aggregation-display elements', function() {
+        element._dataFilteredList = [{
+          id: 1,
+          myText: 'a'
+        }];
+        element._dataUnfilteredList = [{
+          id: 1,
+          myText: 'b'
+        }];
+        element.selectedIds = [1];
+
+        expect(element._dataSelectedList).to.deep.equal([{
+          id: 1,
+          myText: 'a'
+        }]);
+
+        element.textProperty = 'myText';
+
+        expect(element._dataSelectedList).to.deep.equal([{
+          id: 1,
+          myText: 'a'
+        }, {
+          id: 1,
+          myText: 'b'
+        }]);
+
+        var displayElements = document.querySelectorAll('aggregation-display');
+
+        expect(displayElements[0].data).to.deep.equal([{
+          id: 1,
+          myText: 'a'
+        }]);
+        expect(displayElements[1].data).to.deep.equal([{
+          id: 1,
+          myText: 'b'
+        }]);
+        expect(displayElements[2].data).to.deep.equal([{
+          id: 1,
+          myText: 'a'
+        }, {
+          id: 1,
+          myText: 'b'
+        }]);
+
+        expect(displayElements[0].headerDataName).to.equal('Filtered My Data (1)');
+        expect(displayElements[1].headerDataName).to.equal('Unfiltered My Data (1)');
+        expect(displayElements[2].headerDataName).to.equal('Selected My Data (2)');
+
+        expect(displayElements[0].selectedIds).to.deep.equal([1]);
+        expect(displayElements[1].selectedIds).to.deep.equal([1]);
+        expect(displayElements[2].selectedIds).to.deep.equal([1]);
       });
     });
   </script>
