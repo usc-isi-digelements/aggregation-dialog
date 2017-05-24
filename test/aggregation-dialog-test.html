@@ -299,57 +299,47 @@ limitations under the License.
         expect(element._createObject()).to.deep.equal({});
       });
 
-      test('_createSelectedFunction does return the correct function', function() {
+      test('_createSelectedFunction does return a function', function() {
         expect(element._createSelectedFunction).to.be.a('Function');
         var callback = element._createSelectedFunction();
         expect(callback).to.be.a('Function');
-        expect(callback([])).to.deep.equal([]);
+      });
+
+      test('_createSelectedFunction does work', function() {
+        var callback = element._createSelectedFunction();
+        expect(callback([], [])).to.deep.equal([]);
 
         expect(callback([{
-          id: 2
+          id: 1
         }], [])).to.deep.equal([]);
 
         expect(callback([{
-          id: 2
-        }], [1])).to.deep.equal([]);
-
-        expect(callback([{
-          id: 2
-        }], [2])).to.deep.equal([{
-          id: 2
+          id: 1
+        }], [1])).to.deep.equal([{
+          id: 1
         }]);
 
         expect(callback([{
+          id: 1
+        }, {
+          id: 2
+        }], [1])).to.deep.equal([{
+          id: 1
+        }]);
+
+        expect(callback([{
+          id: 1
+        }, {
           id: 2
         }], [1, 2])).to.deep.equal([{
-          id: 2
-        }]);
-
-        expect(callback([{
-          id: 2
+          id: 1
         }, {
-          id: 3
-        }], [1, 2])).to.deep.equal([{
           id: 2
-        }]);
-
-        expect(callback([{
-          id: 2
-        }, {
-          id: 3
-        }], [2, 3])).to.deep.equal([{
-          id: 2
-        }, {
-          id: 3
         }]);
       });
 
       test('_createSelectedFunction does use the idProperty', function() {
         var callback = element._createSelectedFunction();
-
-        expect(callback([{
-          myId: 1
-        }], [1])).to.deep.equal([]);
 
         element.idProperty = 'myId';
 
@@ -357,6 +347,192 @@ limitations under the License.
           myId: 1
         }], [1])).to.deep.equal([{
           myId: 1
+        }]);
+      });
+
+      test('_createSelectedFunction does create new data items for selectedIds not in the data', function() {
+        var callback = element._createSelectedFunction();
+
+        expect(callback([], [1])).to.deep.equal([{
+          count: 0,
+          id: 1,
+          text: 1
+        }]);
+
+        expect(callback([], ['testId'])).to.deep.equal([{
+          count: 0,
+          id: 'testId',
+          text: 'testId'
+        }]);
+
+        expect(callback([{
+          id: 2
+        }], [1])).to.deep.equal([{
+          count: 0,
+          id: 1,
+          text: 1
+        }]);
+
+        expect(callback([{
+          id: 2
+        }], [1, 2])).to.deep.equal([{
+          count: 0,
+          id: 1,
+          text: 1
+        }, {
+          id: 2
+        }]);
+
+        expect(callback([{
+          id: 2
+        }, {
+          id: 3
+        }], [1, 2])).to.deep.equal([{
+          count: 0,
+          id: 1,
+          text: 1
+        }, {
+          id: 2
+        }]);
+
+        expect(callback([{
+          id: 2
+        }, {
+          id: 3
+        }], [1, 2, 3, 4])).to.deep.equal([{
+          count: 0,
+          id: 1,
+          text: 1
+        }, {
+          id: 2
+        }, {
+          id: 3
+        }, {
+          count: 0,
+          id: 4,
+          text: 4
+        }]);
+      });
+
+      test('_createSelectedFunction does create new data items for selectedIds not in the data using countProperty, idProperty, and textProperty', function() {
+        var callback = element._createSelectedFunction();
+
+        element.countProperty = 'myCount';
+        element.idProperty = 'myId';
+        element.textProperty = 'myText';
+
+        expect(callback([], [1])).to.deep.equal([{
+          myCount: 0,
+          myId: 1,
+          myText: 1
+        }]);
+      });
+
+      test('_createSelectedFunction does sort output data in descending count order', function() {
+        var callback = element._createSelectedFunction();
+
+        expect(callback([{
+          count: 4,
+          id: 1
+        }, {
+          count: 8,
+          id: 2
+        }], [1, 2])).to.deep.equal([{
+          count: 8,
+          id: 2
+        }, {
+          count: 4,
+          id: 1
+        }]);
+
+        expect(callback([{
+          count: 8,
+          id: 1
+        }, {
+          count: 4,
+          id: 2
+        }], [2, 1])).to.deep.equal([{
+          count: 8,
+          id: 1
+        }, {
+          count: 4,
+          id: 2
+        }]);
+      });
+
+      test('_createSelectedFunction does sort output data alphabetically if counts are equal', function() {
+        var callback = element._createSelectedFunction();
+
+        expect(callback([{
+          count: 1,
+          id: 'b'
+        }, {
+          count: 1,
+          id: 'a'
+        }], ['a', 'b'])).to.deep.equal([{
+          count: 1,
+          id: 'a'
+        }, {
+          count: 1,
+          id: 'b'
+        }]);
+
+        expect(callback([{
+          count: 1,
+          id: 'b'
+        }, {
+          count: 1,
+          id: 'a'
+        }, {
+          count: 10,
+          id: 'c'
+        }], ['a', 'b', 'c'])).to.deep.equal([{
+          count: 10,
+          id: 'c'
+        }, {
+          count: 1,
+          id: 'a'
+        }, {
+          count: 1,
+          id: 'b'
+        }]);
+      });
+
+      test('_createSelectedFunction does sort output data alphabetically if orderBy is _term', function() {
+        var callback = element._createSelectedFunction();
+
+        element.orderBy = '_term';
+
+        expect(callback([{
+          count: 10,
+          id: 'b'
+        }, {
+          count: 1,
+          id: 'a'
+        }], ['a', 'b'])).to.deep.equal([{
+          count: 1,
+          id: 'a'
+        }, {
+          count: 10,
+          id: 'b'
+        }]);
+
+        expect(callback([{
+          count: 10,
+          id: 'b'
+        }, {
+          count: 1,
+          id: 'c'
+        }], ['a', 'b', 'c'])).to.deep.equal([{
+          count: 0,
+          id: 'a',
+          text: 'a'
+        }, {
+          count: 10,
+          id: 'b'
+        }, {
+          count: 1,
+          id: 'c'
         }]);
       });
 
@@ -460,8 +636,6 @@ limitations under the License.
           myId: 2
         }];
         element.selectedIds = [1, 2];
-
-        expect(element._dataSelectedList).to.deep.equal([]);
 
         element.idProperty = 'myId';
 

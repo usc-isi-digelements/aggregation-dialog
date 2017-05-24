@@ -705,9 +705,36 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
        */
       _createSelectedFunction: function() {
         var self = this;
-        return function(data, selected) {
-          return data.filter(function(item) {
-            return selected.indexOf(item[self.idProperty]) >= 0;
+        return function(data, selectedIds) {
+          var dataIds = data.map(function(item) {
+            return item[self.idProperty];
+          });
+
+          return selectedIds.map(function(id) {
+            var dataIndex = dataIds.indexOf(id);
+            if(dataIndex >= 0) {
+              return data[dataIndex];
+            }
+            var selectedItem = {};
+            selectedItem[self.countProperty] = 0;
+            selectedItem[self.idProperty] = id;
+            selectedItem[self.textProperty] = id;
+            return selectedItem;
+          }).sort(function(a, b) {
+            var diff = b[self.countProperty] - a[self.countProperty];
+
+            // Sort alphabetically if orderBy is _term or if the counts are equal.
+            if(self.orderBy === '_term' || !diff) {
+              if((b[self.textProperty] || b[self.idProperty]) < (a[self.textProperty] || a[self.idProperty])) {
+                return 1;
+              }
+              if((b[self.textProperty] || b[self.idProperty]) > (a[self.textProperty] || a[self.idProperty])) {
+                return -1;
+              }
+            }
+
+            // Sort by descending count otherwise.
+            return diff;
           });
         };
       },
