@@ -235,12 +235,75 @@ limitations under the License.
         });
       });
 
+      test('_createArrayUnion does return an array', function() {
+        expect(element._createArrayUnion).to.be.a('Function');
+        expect(element._createArrayUnion([], [], 'id')).to.deep.equal([]);
+
+        expect(element._createArrayUnion([{
+          id: 1
+        }], [], 'id')).to.deep.equal([{
+          id: 1
+        }]);
+
+        expect(element._createArrayUnion([], [{
+          id: 2
+        }], 'id')).to.deep.equal([{
+          id: 2
+        }]);
+
+        expect(element._createArrayUnion([{
+          id: 1
+        }], [{
+          id: 2
+        }], 'id')).to.deep.equal([{
+          id: 1
+        }, {
+          id: 2
+        }]);
+
+        expect(element._createArrayUnion([{
+          id: 1
+        }], [{
+          id: 1
+        }], 'id')).to.deep.equal([{
+          id: 1
+        }]);
+
+        expect(element._createArrayUnion([{
+          id: 1
+        }, {
+          id: 2
+        }], [{
+          id: 1
+        }, {
+          id: 3
+        }], 'id')).to.deep.equal([{
+          id: 1
+        }, {
+          id: 2
+        }, {
+          id: 3
+        }]);
+
+        expect(element._createArrayUnion([{
+          myId: 1
+        }], [{
+          myId: 1
+        }], 'myId')).to.deep.equal([{
+          myId: 1
+        }]);
+      });
+
+      test('_createObject does return an empty object', function() {
+        expect(element._createObject).to.be.a('Function');
+        expect(element._createObject()).to.deep.equal({});
+      });
+
       test('_createSelectedFunction does return the correct function', function() {
         expect(element._createSelectedFunction).to.be.a('Function');
         var callback = element._createSelectedFunction();
         expect(callback).to.be.a('Function');
         expect(callback([])).to.deep.equal([]);
-        expect(callback([], [1])).to.deep.equal([]);
 
         expect(callback([{
           id: 2
@@ -297,11 +360,6 @@ limitations under the License.
         }]);
       });
 
-      test('_createObject does return an empty object', function() {
-        expect(element._createObject).to.be.a('Function');
-        expect(element._createObject()).to.deep.equal({});
-      });
-
       test('_getTitleAndCount does return the correct strings', function() {
         expect(element._getTitleAndCount).to.be.a('Function');
         expect(element._getTitleAndCount('foobar')).to.equal('foobar');
@@ -328,7 +386,7 @@ limitations under the License.
         expect(queryElements[1].processRequest).to.be.true;
       });
 
-      test('changing _dataUnfilteredList and selectedIds does update _dataSelectedList and the aggregation-display elements', function() {
+      test('changing _dataUnfilteredList does update _dataSelectedList and the aggregation-display elements', function() {
         element._dataUnfilteredList = [{
           id: 1
         }, {
@@ -361,22 +419,79 @@ limitations under the License.
         expect(displayElements[2].selectedIds).to.deep.equal([1]);
       });
 
-      test('changing _dataFilteredList does update the aggregation-display elements', function() {
+      test('changing _dataFilteredList does update _dataSelectedList and the aggregation-display elements', function() {
         element._dataFilteredList = [{
           id: 1
+        }, {
+          id: 2
         }];
+        element.selectedIds = [1];
+
+        expect(element._dataSelectedList).to.deep.equal([{
+          id: 1
+        }]);
 
         var displayElements = document.querySelectorAll('aggregation-display');
 
         expect(displayElements[0].data).to.deep.equal([{
           id: 1
+        }, {
+          id: 2
         }]);
         expect(displayElements[1].data).to.deep.equal([]);
-        expect(displayElements[2].data).to.deep.equal([]);
+        expect(displayElements[2].data).to.deep.equal([{
+          id: 1
+        }]);
+
+        expect(displayElements[0].headerDataName).to.equal('Filtered My Data (2)');
+        expect(displayElements[1].headerDataName).to.equal('Unfiltered My Data');
+        expect(displayElements[2].headerDataName).to.equal('Selected My Data (1)');
+
+        expect(displayElements[0].selectedIds).to.deep.equal([1]);
+        expect(displayElements[1].selectedIds).to.deep.equal([1]);
+        expect(displayElements[2].selectedIds).to.deep.equal([1]);
+      });
+
+      test('changing idProperty does update _dataSelectedList and the aggregation-display elements', function() {
+        element._dataFilteredList = [{
+          myId: 1
+        }];
+        element._dataUnfilteredList = [{
+          myId: 2
+        }];
+        element.selectedIds = [1, 2];
+
+        expect(element._dataSelectedList).to.deep.equal([]);
+
+        element.idProperty = 'myId';
+
+        expect(element._dataSelectedList).to.deep.equal([{
+          myId: 1
+        }, {
+          myId: 2
+        }]);
+
+        var displayElements = document.querySelectorAll('aggregation-display');
+
+        expect(displayElements[0].data).to.deep.equal([{
+          myId: 1
+        }]);
+        expect(displayElements[1].data).to.deep.equal([{
+          myId: 2
+        }]);
+        expect(displayElements[2].data).to.deep.equal([{
+          myId: 1
+        }, {
+          myId: 2
+        }]);
 
         expect(displayElements[0].headerDataName).to.equal('Filtered My Data (1)');
-        expect(displayElements[1].headerDataName).to.equal('Unfiltered My Data');
-        expect(displayElements[2].headerDataName).to.equal('Selected My Data');
+        expect(displayElements[1].headerDataName).to.equal('Unfiltered My Data (1)');
+        expect(displayElements[2].headerDataName).to.equal('Selected My Data (2)');
+
+        expect(displayElements[0].selectedIds).to.deep.equal([1, 2]);
+        expect(displayElements[1].selectedIds).to.deep.equal([1, 2]);
+        expect(displayElements[2].selectedIds).to.deep.equal([1, 2]);
       });
     });
   </script>

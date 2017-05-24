@@ -138,7 +138,7 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
     <elastic-error error="[[_errorUnfilteredList]]" message="{{_errorMessageUnfilteredList}}"></elastic-error>
 
     <json-combine
-      data-in1="[[_dataUnfilteredList]]"
+      data-in1="[[_createArrayUnion(_dataFilteredList, _dataUnfilteredList, idProperty)]]"
       data-in2="[[selectedIds]]"
       data-out="{{_dataSelectedList}}"
       combine-function="[[_createSelectedFunction()]]">
@@ -663,6 +663,41 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
       },
 
       /**
+       * Returns the union of the two given arrays.
+       *
+       * @param {Array} one
+       * @param {Array} two
+       * @param {String} idProperty
+       * @return {Array}
+       * @private
+       */
+      _createArrayUnion: function(one, two, idProperty) {
+        var data = [];
+        var ids = [];
+
+        one.forEach(function(item) {
+          data.push(item);
+          ids.push(item[idProperty])
+        });
+
+        return data.concat(two.filter(function(item) {
+          return ids.indexOf(item[idProperty]) < 0;
+        }).map(function(item) {
+          return item;
+        }));
+      },
+
+      /**
+       * Returns an empty object because the query doesn't run if the empty object is hard-coded in the property (for unknown reasons).
+       *
+       * @return {Object}
+       * @private
+       */
+      _createObject: function() {
+        return {};
+      },
+
+      /**
        * Returns the selected data transform function.
        *
        * @return {Function}
@@ -675,16 +710,6 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
             return selected.indexOf(item[self.idProperty]) >= 0;
           });
         };
-      },
-
-      /**
-       * Returns an empty object because the query doesn't run if the empty object is hard-coded in the property (for unknown reasons).
-       *
-       * @return {Object}
-       * @private
-       */
-      _createObject: function() {
-        return {};
       },
 
       /**
