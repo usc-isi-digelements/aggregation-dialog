@@ -118,7 +118,7 @@ limitations under the License.
       });
 
       test('does have facet-aggregation-query elements', function() {
-        var queryElements = document.querySelectorAll('facet-aggregation-query');
+        var queryElements = Polymer.dom(element.root).querySelectorAll('facet-aggregation-query');
 
         expect(queryElements[0]).to.exist;
         expect(queryElements[0].index).to.equal('myIndexName');
@@ -154,7 +154,7 @@ limitations under the License.
       });
 
       test('does have elastic-error elements', function() {
-        var errorElements = document.querySelectorAll('elastic-error');
+        var errorElements = Polymer.dom(element.root).querySelectorAll('elastic-error');
         expect(errorElements[0]).to.exist;
         expect(errorElements[1]).to.exist;
       });
@@ -171,7 +171,7 @@ limitations under the License.
       });
 
       test('does have aggregation-display elements', function() {
-        var displayElements = document.querySelectorAll('aggregation-display');
+        var displayElements = Polymer.dom(element.root).querySelectorAll('aggregation-display');
 
         expect(displayElements[0]).to.exist;
         expect(displayElements[0].countProperty).to.equal('count');
@@ -754,7 +754,7 @@ limitations under the License.
       test('changing _opened to false does not update _runQueries or the facet-aggregation-query elements', function() {
         element._opened = false;
         expect(element._runQueries).to.be.false;
-        var queryElements = document.querySelectorAll('facet-aggregation-query');
+        var queryElements = Polymer.dom(element.root).querySelectorAll('facet-aggregation-query');
         expect(queryElements[0].processRequest).to.be.false;
         expect(queryElements[1].processRequest).to.be.false;
       });
@@ -762,7 +762,7 @@ limitations under the License.
       test('changing _opened to true does update _runQueries and the facet-aggregation-query elements', function() {
         element._opened = true;
         expect(element._runQueries).to.be.true;
-        var queryElements = document.querySelectorAll('facet-aggregation-query');
+        var queryElements = Polymer.dom(element.root).querySelectorAll('facet-aggregation-query');
         expect(queryElements[0].processRequest).to.be.true;
         expect(queryElements[1].processRequest).to.be.true;
       });
@@ -779,7 +779,7 @@ limitations under the License.
           id: 1
         }]);
 
-        var displayElements = document.querySelectorAll('aggregation-display');
+        var displayElements = Polymer.dom(element.root).querySelectorAll('aggregation-display');
 
         expect(displayElements[0].data).to.deep.equal([]);
         expect(displayElements[1].data).to.deep.equal([{
@@ -812,7 +812,7 @@ limitations under the License.
           id: 1
         }]);
 
-        var displayElements = document.querySelectorAll('aggregation-display');
+        var displayElements = Polymer.dom(element.root).querySelectorAll('aggregation-display');
 
         expect(displayElements[0].data).to.deep.equal([{
           id: 1
@@ -861,7 +861,7 @@ limitations under the License.
           myId: 2
         }]);
 
-        var displayElements = document.querySelectorAll('aggregation-display');
+        var displayElements = Polymer.dom(element.root).querySelectorAll('aggregation-display');
 
         expect(displayElements[0].data).to.deep.equal([{
           myId: 1
@@ -910,7 +910,7 @@ limitations under the License.
           myText: 'b'
         }]);
 
-        var displayElements = document.querySelectorAll('aggregation-display');
+        var displayElements = Polymer.dom(element.root).querySelectorAll('aggregation-display');
 
         expect(displayElements[0].data).to.deep.equal([{
           id: 1,
