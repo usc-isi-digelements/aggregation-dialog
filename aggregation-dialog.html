@@ -28,7 +28,7 @@ limitations under the License.
 <!--
 A Polymer Element showing a set of aggregation-display elements in a styled-dialog.
 
-### Example
+### Example that runs elasticsearch queries
 ```html
 <aggregation-dialog
   client="[[client]]"
@@ -39,7 +39,21 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
   search-parameters="[[searchParameters]]"
   aggregation-field="field"
   aggregation-name="aggregation"
-  combine-function="[[combineFunction]]"
+  result-function="[[resultFunction]]"
+  order-by="{{order}}"
+  selected-ids="{{selected}}">
+</aggregation-dialog>
+```
+
+### Example that runs ajax queries
+```html
+<aggregation-dialog
+  aggregation-name="[[dataType]]"
+  query-url="[[queryUrl]]"
+  process-request="[[processRequest]]"
+  result-function="[[resultFunction]]"
+  search-function="[[searchFunction]]"
+  search-parameters="[[searchParameters]]"
   order-by="{{order}}"
   selected-ids="{{selected}}">
 </aggregation-dialog>
@@ -98,6 +112,7 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
     </template>
 
     <facet-aggregation-query
+      query-url="[[queryUrl]]"
       client="[[client]]"
       index="[[indexName]]"
       index-types="[[indexTypes]]"
@@ -109,8 +124,9 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
       field="[[aggregationField]]"
       name="[[aggregationName]]"
       sort-order="[[orderBy]]"
-      combine-function="[[combineFunction]]"
-      last-error="{{_errorFilteredList}}"
+      result-function="[[resultFunction]]"
+      search-function="[[searchFunction]]"
+      error="{{_errorFilteredList}}"
       loading="{{_loadingFilteredList}}"
       result-list="{{_dataFilteredList}}">
     </facet-aggregation-query>
@@ -118,6 +134,7 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
     <elastic-error error="[[_errorFilteredList]]" message="{{_errorMessageFilteredList}}"></elastic-error>
 
     <facet-aggregation-query
+      query-url="[[queryUrl]]"
       client="[[client]]"
       index="[[indexName]]"
       index-types="[[indexTypes]]"
@@ -129,8 +146,9 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
       field="[[aggregationField]]"
       name="[[aggregationName]]"
       sort-order="[[orderBy]]"
-      combine-function="[[combineFunction]]"
-      last-error="{{_errorUnfilteredList}}"
+      result-function="[[resultFunction]]"
+      search-function="[[searchFunction]]"
+      error="{{_errorUnfilteredList}}"
       loading="{{_loadingUnfilteredList}}"
       result-list="{{_dataUnfilteredList}}">
     </facet-aggregation-query>
@@ -237,7 +255,18 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
         /**
          * (Required)
          *
-         * The elasticsearch client object.
+         * The query URL for the ajax queries.  Not required if the elasticsearch properties are set.
+         *
+         * @type {String}
+         */
+        queryUrl: {
+          type: String
+        },
+
+        /**
+         * (Required)
+         *
+         * The elasticsearch client object.  Not required if `queryUrl` and `searchFunction` are set.
          *
          * @type {Object}
          */
@@ -248,7 +277,7 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
         /**
          * (Required)
          *
-         * The elasticsearch index to query.
+         * The elasticsearch index to query.  Not required if `queryUrl` and `searchFunction` are set.
          *
          * @type {String}
          */
@@ -259,7 +288,7 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
         /**
          * (Required)
          *
-         * The elasticsearch index types to query.
+         * The elasticsearch index types to query.  Not required if `queryUrl` and `searchFunction` are set.
          *
          * @type {Array}
          */
@@ -284,6 +313,8 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
          * Query config object passed to `query-builder` with unique keys from `searchParameters` mapped to config objects containing
          * {String} field and (Optional) {String} type.  Default `type` is "string".  Supported `type` options are "string", "date". 
          *
+         * Not required if `queryUrl` and `searchFunction` are set.
+         *
          * @type {Object}
          */
         queryBuilderConfig: {
@@ -304,7 +335,7 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
         /**
          * (Required)
          *
-         * The aggregation field.
+         * The aggregation field.  Not required if `queryUrl` and `searchFunction` are set.
          *
          * @type {String}
          */
@@ -315,12 +346,13 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
         /**
          * (Required)
          *
-         * The aggregation name.
+         * Either the name of the elasticsearch aggregation if `client` is set or the type of the aggregation data passed to `searchFunction` if `queryUrl` is set.
          *
          * @type {String}
          */
         aggregationName: {
-          type: String
+          type: String,
+          value: ''
         },
 
         /**
@@ -330,7 +362,18 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
          *
          * @type {Object}
          */
-        combineFunction: {
+        resultFunction: {
+          type: Object
+        },
+
+        /**
+         * (Required)
+         *
+         * The search parameters transform function.  Only required if `queryUrl` is set.
+         *
+         * @type {Object}
+         */
+        searchFunction: {
           type: Object
         },
 
@@ -624,7 +667,8 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
          * @private
          */
         _loadingFilteredList: {
-          type: Boolean
+          type: Boolean,
+          value: false
         },
 
         /**
@@ -634,7 +678,8 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
          * @private
          */
         _loadingUnfilteredList: {
-          type: Boolean
+          type: Boolean,
+          value: false
         },
 
         /**

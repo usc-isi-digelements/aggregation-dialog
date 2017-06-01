@@ -2,7 +2,7 @@
 
 A Polymer Element showing a set of aggregation-display elements in a styled-dialog.
 
-### Example
+### Example that runs elasticsearch queries
 ```html
 <aggregation-dialog
   client="[[client]]"
@@ -13,7 +13,21 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
   search-parameters="[[searchParameters]]"
   aggregation-field="field"
   aggregation-name="aggregation"
-  combine-function="[[combineFunction]]"
+  result-function="[[resultFunction]]"
+  order-by="{{order}}"
+  selected-ids="{{selected}}">
+</aggregation-dialog>
+```
+
+### Example that runs ajax queries
+```html
+<aggregation-dialog
+  aggregation-name="[[dataType]]"
+  query-url="[[queryUrl]]"
+  process-request="[[processRequest]]"
+  result-function="[[resultFunction]]"
+  search-function="[[searchFunction]]"
+  search-parameters="[[searchParameters]]"
   order-by="{{order}}"
   selected-ids="{{selected}}">
 </aggregation-dialog>

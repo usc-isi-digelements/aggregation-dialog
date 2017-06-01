@@ -50,7 +50,8 @@ limitations under the License.
         };
         element.aggregationField = 'myAggregationField';
         element.aggregationName = 'myAggregationName';
-        element.combineFunction = function() {};
+        element.resultFunction = function() {};
+        element.searchFunction = function() {};
         element.headerDataName = 'My Data';
         element.headerCountsName = 'My Counts';
         element.showCheckboxes = true;
@@ -135,7 +136,8 @@ limitations under the License.
         expect(queryElements[0].field).to.equal('myAggregationField');
         expect(queryElements[0].name).to.equal('myAggregationName');
         expect(queryElements[0].sortOrder).to.equal('');
-        expect(queryElements[0].combineFunction).to.deep.equal(element.combineFunction);
+        expect(queryElements[0].resultFunction).to.deep.equal(element.resultFunction);
+        expect(queryElements[0].searchFunction).to.deep.equal(element.searchFunction);
 
         expect(queryElements[1]).to.exist;
         expect(queryElements[1].index).to.equal('myIndexName');
@@ -150,7 +152,8 @@ limitations under the License.
         expect(queryElements[1].field).to.equal('myAggregationField');
         expect(queryElements[1].name).to.equal('myAggregationName');
         expect(queryElements[1].sortOrder).to.equal('');
-        expect(queryElements[1].combineFunction).to.deep.equal(element.combineFunction);
+        expect(queryElements[1].resultFunction).to.deep.equal(element.resultFunction);
+        expect(queryElements[1].searchFunction).to.deep.equal(element.searchFunction);
       });
 
       test('does have elastic-error elements', function() {
