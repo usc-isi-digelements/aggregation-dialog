@@ -157,7 +157,7 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
 
     <json-combine
       data-in1="[[_createDataSet(_dataFilteredList, _dataUnfilteredList, idProperty, textProperty)]]"
-      data-in2="[[selectedIds]]"
+      data-in2="[[_selectedConfig]]"
       data-out="{{_dataSelectedList}}"
       combine-function="[[_createSelectedFunction()]]">
     </json-combine>
@@ -182,6 +182,7 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
           target="[[target]]"
           error-message="[[_errorMessageFilteredList]]"
           loading="[[_loadingFilteredList]]"
+          selected-ids-property="[[selectedIdsProperty]]"
           selected-ids="{{selectedIds}}">
         </aggregation-display>
 
@@ -201,6 +202,7 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
           target="[[target]]"
           error-message="[[_errorMessageUnfilteredList]]"
           loading="[[_loadingUnfilteredList]]"
+          selected-ids-property="[[selectedIdsProperty]]"
           selected-ids="{{selectedIds}}">
         </aggregation-display>
 
@@ -220,6 +222,7 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
           target="[[target]]"
           error-message="[[_errorMessageUnfilteredList]]"
           loading="[[_loadingUnfilteredList]]"
+          selected-ids-property="[[selectedIdsProperty]]"
           selected-ids="{{selectedIds}}">
         </aggregation-display>
       </div>
@@ -575,19 +578,30 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
         },
 
         /**
-         * (Output)
+         * (Optional|Output)
          *
-         * The list of selected IDs from the data.
+         * The list of selected string IDs from the data to filter.  Either a list of an object containing a list at its `selectedIdsProperty` property.
          *
-         * @type {Array}
+         * @type {Array|Object}
          * @default []
          */
         selectedIds: {
           notify: true,
-          type: Array,
+          type: Object,
           value: function() {
             return [];
           }
+        },
+
+        /**
+         * (Optional)
+         *
+         * The property in the `selectedIds` object containing the list of selected string IDs.  If undefined, assumes that `selectedIds` itself is a list.
+         *
+         * @type {String}
+         */
+        selectedIdsProperty: {
+          type: String
         },
 
         /**
@@ -704,8 +718,23 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
         _runQueries: {
           type: Boolean,
           value: false
+        },
+
+        /**
+         * The config for the selected data transform function.
+         *
+         * @type {Array}
+         * @private
+         */
+        _selectedConfig: {
+          type: Array
         }
       },
+
+      observers: [
+        '_createSelectedConfig(selectedIds)',
+        '_createSelectedConfig(selectedIdsProperty)'
+      ],
 
       /**
        * Returns the set of the two given data lists.
@@ -745,6 +774,24 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
        */
       _createObject: function() {
         return {};
+      },
+
+      /**
+       * Sets the config for the selected data transform function.
+       *
+       * @return {Array}
+       * @private
+       */
+      _createSelectedConfig: function() {
+        if(this.selectedIds) {
+          if(this.selectedIdsProperty) {
+            this.set('_selectedConfig', this.selectedIds[this.selectedIdsProperty]);
+          } else {
+            this.set('_selectedConfig', this.selectedIds);
+          }
+        } else {
+          this.set('_selectedConfig', undefined);
+        }
       },
 
       /**
