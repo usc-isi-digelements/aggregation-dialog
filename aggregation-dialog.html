@@ -128,7 +128,8 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
       search-function="[[searchFunction]]"
       error="{{_errorFilteredList}}"
       loading="{{_loadingFilteredList}}"
-      result-list="{{_dataFilteredList}}">
+      result-list="{{_dataFilteredList}}"
+      network-expansion-parameters="[[networkExpansionParameters]]">
     </facet-aggregation-query>
 
     <elastic-error error="[[_errorFilteredList]]" message="{{_errorMessageFilteredList}}"></elastic-error>
@@ -332,6 +333,17 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
          * @type {Object}
          */
         searchParameters: {
+          type: Object
+        },
+
+        /**
+         * (Required)
+         *
+         * The network expansion parameters for the query (if needed).
+         *
+         * @type {Object}
+         */
+        networkExpansionParameters: {
           type: Object
         },
 
