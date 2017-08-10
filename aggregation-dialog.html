@@ -124,12 +124,13 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
       field="[[aggregationField]]"
       name="[[aggregationName]]"
       sort-order="[[orderBy]]"
+      result-config="[[resultConfig]]"
       result-function="[[resultFunction]]"
+      search-config="[[searchConfig]]"
       search-function="[[searchFunction]]"
       error="{{_errorFilteredList}}"
       loading="{{_loadingFilteredList}}"
-      result-list="{{_dataFilteredList}}"
-      network-expansion-parameters="[[networkExpansionParameters]]">
+      result-list="{{_dataFilteredList}}">
     </facet-aggregation-query>
 
     <elastic-error error="[[_errorFilteredList]]" message="{{_errorMessageFilteredList}}"></elastic-error>
@@ -339,17 +340,6 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
         /**
          * (Required)
          *
-         * The network expansion parameters for the query (if needed).
-         *
-         * @type {Object}
-         */
-        networkExpansionParameters: {
-          type: Object
-        },
-
-        /**
-         * (Required)
-         *
          * The aggregation field.  Not required if `queryUrl` and `searchFunction` are set.
          *
          * @type {String}
@@ -371,6 +361,17 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
         },
 
         /**
+         * (Optional)
+         *
+         * The result config for the result transform function.
+         *
+         * @type {Object}
+         */
+        resultConfig: {
+          type: Object
+        },
+
+        /**
          * (Required)
          *
          * The query results transform function.
@@ -378,6 +379,17 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
          * @type {Object}
          */
         resultFunction: {
+          type: Object
+        },
+
+        /**
+         * (Optional)
+         *
+         * The search config for the search transform function.
+         *
+         * @type {Object}
+         */
+        searchConfig: {
           type: Object
         },
 
