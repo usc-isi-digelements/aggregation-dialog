@@ -82,13 +82,8 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
         pointer-events: none;
       }
 
-      styled-dialog ::content .fill {
-        /* Set a max-height (because the aggregation-display doesn't fill) that is at least 750px (the height of the inside of the styled-dialog). */
-        max-height: 750px;
-      }
-
-      styled-dialog ::content .data {
-        max-height: 440px;
+      styled-dialog ::content aggregation-display {
+        min-height: 515px;
       }
 
       styled-dialog iron-icon {
@@ -99,11 +94,6 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
 
       .columns > *:not(:last-child) {
         margin-right: 10px;
-      }
-
-      .help {
-        /* Height of 5 lines. */
-        min-height: 100px;
       }
     </style>
 
