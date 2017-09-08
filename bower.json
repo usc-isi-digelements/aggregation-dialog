@@ -1,7 +1,7 @@
 {
   "name": "aggregation-dialog",
   "description": "A Polymer Element showing a set of aggregation-display elements in a styled-dialog.",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "authors": [
     "Next Century Corporation"
   ],
