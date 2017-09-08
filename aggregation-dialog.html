@@ -761,6 +761,9 @@ A Polymer Element showing a set of aggregation-display elements in a styled-dial
        * @private
        */
       _createDataSet: function(one, two, idProperty, textProperty) {
+        if(!one || !two || !idProperty || !textProperty){
+          return;
+        }
         var set = [];
         var ids = [];
 

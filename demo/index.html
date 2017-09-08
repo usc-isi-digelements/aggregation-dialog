@@ -18,94 +18,96 @@ limitations under the License.
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-  <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
   <link rel="import" href="../aggregation-dialog.html">
 </head>
 
 <body unresolved>
-  <template is="dom-bind" id="demo">
-    <h3>Inputs</h3>
-    <p>Limit: 500</p>
-    <p>Header Counts Name: My Counts</p>
-    <p>Header Data Name: My Data</p>
-    <p>Show Checkboxes: true</p>
-    <p>Checkbox Name: My Checkbox</p>
-    <p>Target: _blank</p>
+  <dom-bind>
+    <template is="dom-bind" id="demo">
+      <h3>Inputs</h3>
+      <p>Limit: 500</p>
+      <p>Header Counts Name: My Counts</p>
+      <p>Header Data Name: My Data</p>
+      <p>Show Checkboxes: true</p>
+      <p>Checkbox Name: My Checkbox</p>
+      <p>Target: _blank</p>
 
-    <h3>Data</h3>
-    <p>Filtered: [[filteredDataString]]</p>
-    <p>Unfiltered: [[unfilteredDataString]]</p>
+      <h3>Data</h3>
+      <p>Filtered: [[filteredDataString]]</p>
+      <p>Unfiltered: [[unfilteredDataString]]</p>
 
-    <h3>Outputs</h3>
-    <p>Order By: [[order]]</p>
-    <p>Selected Ids:  [[selected]]</p>
+      <h3>Outputs</h3>
+      <p>Order By: [[order]]</p>
+      <p>Selected Ids:  [[selected]]</p>
 
-    <h3>Element</h3>
-    <aggregation-dialog id="dialog"
-      header-counts-name="My Counts"
-      header-data-name="My Data"
-      show-checkboxes
-      checkbox-name="My Checkbox"
-      target="_blank"
-      order-by="{{order}}"
-      selected-ids="{{selected}}">
-    </aggregation-dialog>
+      <h3>Element</h3>
+      <aggregation-dialog id="dialog"
+        header-counts-name="My Counts"
+        header-data-name="My Data"
+        show-checkboxes
+        checkbox-name="My Checkbox"
+        target="_blank"
+        order-by="{{order}}"
+        selected-ids="{{selected}}">
+      </aggregation-dialog>
 
-    <p>Note:  Sorting does not work in this demo.</p>
-  </template>
+      <p>Note:  Sorting does not work in this demo.</p>
+    </template>
 
-  <script>
-    (function(document) {
-      var demo = document.querySelector('#demo');
-      demo.render();
-      var dialog = demo.$.dialog;
-      dialog._dataFilteredList = [{
-        count: 5,
-        icon: 'icons:polymer',
-        id: 2,
-        link: 'http://nextcentury.com',
-        max: 10,
-        text: 'Bar 2'
-      }];
-      dialog._dataUnfilteredList = [{
-        count: 10,
-        icon: 'icons:polymer',
-        id: 1,
-        link: 'http://nextcentury.com',
-        max: 10,
-        text: 'Bar 1'
-      }, {
-        count: 5,
-        icon: 'icons:polymer',
-        id: 2,
-        link: 'http://nextcentury.com',
-        max: 10,
-        text: 'Bar 2'
-      }, {
-        count: 2,
-        icon: 'icons:polymer',
-        id: 3,
-        link: 'http://nextcentury.com',
-        max: 10,
-        text: 'Bar 3'
-      }, {
-        count: 1,
-        icon: 'icons:polymer',
-        id: 4,
-        link: 'http://nextcentury.com',
-        max: 10,
-        text: 'Bar 4'
-      }, {
-        count: 0,
-        icon: 'icons:polymer',
-        id: 5,
-        link: 'http://nextcentury.com',
-        max: 10,
-        text: 'Bar 5'
-      }];
-      demo.filteredDataString = JSON.stringify(dialog._dataFilteredList);
-      demo.unfilteredDataString = JSON.stringify(dialog._dataUnfilteredList);
-    })(document);
-  </script>
+    <script>
+      (function(document) {
+        var domBind = document.querySelector('dom-bind');
+        domBind.render();
+        var dialog = domBind.$.dialog;
+        dialog._dataFilteredList = [{
+          count: 5,
+          icon: 'icons:polymer',
+          id: 2,
+          link: 'http://nextcentury.com',
+          max: 10,
+          text: 'Bar 2'
+        }];
+        dialog._dataUnfilteredList = [{
+          count: 10,
+          icon: 'icons:polymer',
+          id: 1,
+          link: 'http://nextcentury.com',
+          max: 10,
+          text: 'Bar 1'
+        }, {
+          count: 5,
+          icon: 'icons:polymer',
+          id: 2,
+          link: 'http://nextcentury.com',
+          max: 10,
+          text: 'Bar 2'
+        }, {
+          count: 2,
+          icon: 'icons:polymer',
+          id: 3,
+          link: 'http://nextcentury.com',
+          max: 10,
+          text: 'Bar 3'
+        }, {
+          count: 1,
+          icon: 'icons:polymer',
+          id: 4,
+          link: 'http://nextcentury.com',
+          max: 10,
+          text: 'Bar 4'
+        }, {
+          count: 0,
+          icon: 'icons:polymer',
+          id: 5,
+          link: 'http://nextcentury.com',
+          max: 10,
+          text: 'Bar 5'
+        }];
+        domBind.filteredDataString = JSON.stringify(dialog._dataFilteredList);
+        domBind.unfilteredDataString = JSON.stringify(dialog._dataUnfilteredList);
+      })(document);
+    </script>
+  </dom-bind>
 </body>
 </html>
