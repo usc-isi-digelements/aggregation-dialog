@@ -147,6 +147,7 @@ Custom property                                     | Description               
       query-builder-config="[[queryBuilderConfig]]"
       search-parameters="[[searchParameters]]"
       count="[[limit]]"
+      date-fields="[[dateFields]]"
       field="[[aggregationField]]"
       name="[[aggregationName]]"
       sort-order="[[orderBy]]"
@@ -171,6 +172,7 @@ Custom property                                     | Description               
       query-builder-config="[[queryBuilderConfig]]"
       search-parameters="[[_createObject()]]"
       count="[[limit]]"
+      date-fields="[[dateFields]]"
       field="[[aggregationField]]"
       name="[[aggregationName]]"
       sort-order="[[orderBy]]"
@@ -362,6 +364,17 @@ Custom property                                     | Description               
          * @type {Object}
          */
         searchParameters: {
+          type: Object
+        },
+
+        /**
+         * (Required)
+         *
+         * Date fields passed to `facet-aggregation-query`.
+         *
+         * @type {Object}
+         */
+        dateFields: {
           type: Object
         },
 
