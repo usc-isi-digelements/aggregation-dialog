@@ -20,8 +20,6 @@ limitations under the License.
 <link rel="import" href="../elastic-error/elastic-error.html">
 <link rel="import" href="../facet-aggregation-query/facet-aggregation-query.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../iron-icon/iron-icon.html">
-<link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="../json-combine/json-combine.html">
 <link rel="import" href="../paper-styles/color.html">
 <link rel="import" href="../styled-dialog/styled-dialog.html">
@@ -104,19 +102,9 @@ Custom property                                     | Description               
         pointer-events: none;
       }
 
-      /* TODO FIXME */
-      styled-dialog ::content aggregation-display {
-        min-height: 515px;
-      }
-
-      styled-dialog iron-icon {
-        --iron-icon: {
-          min-width: 24px;
-        }
-      }
-
       .columns > *:not(:last-child) {
         margin-right: 10px;
+        min-width: 285px;
       }
 
       aggregation-display {
@@ -125,6 +113,7 @@ Custom property                                     | Description               
         --aggregation-display-bar-height: var(--aggregation-dialog-bar-height, 20px);
         --aggregation-display-bar-title-color: var(--aggregation-dialog-bar-title-color, var(--paper-grey-900));
         --aggregation-display-bar-title-hover-color: var(--aggregation-dialog-bar-title-hover-color, var(--paper-grey-600));
+        --aggregation-display-max-height: var(--aggregation-dialog-max-height, 100%);
         --aggregation-display-second-bar-color: var(--aggregation-dialog-second-bar-color, var(--paper-grey-300));
         --aggregation-display-second-bar-count-color: var(--aggregation-dialog-second-bar-count-color, var(--paper-grey-900));
         --aggregation-display-second-bar-height: var(--aggregation-dialog-second-bar-height, 20px);
@@ -197,6 +186,18 @@ Custom property                                     | Description               
     <styled-dialog fill header="[[headerDataName]]" opened="{{_opened}}">
       <aggregation-sort order-by="{{orderBy}}"></aggregation-sort>
 
+      <div class="columns help layout horizontal">
+        <div class="flex styled-dialog-text">
+          The <strong>filtered</strong> list shows results that co-occur with your selected search terms.  This is the same list from the facet sidebar.  Limited to the top [[limit]] results for faster performance.
+        </div>
+        <div class="flex styled-dialog-text">
+          The <strong>unfiltered</strong> list shows all results from the data, ignoring your selected search terms.  Limited to the top [[limit]] results for faster performance.
+        </div>
+        <div class="flex styled-dialog-text">
+          The <strong>selected</strong> list shows your selected search terms from this facet.
+        </div>
+      </div>
+
       <div class="columns layout horizontal flex">
         <aggregation-display class="flex"
           count-property="[[countProperty]]"
@@ -260,27 +261,6 @@ Custom property                                     | Description               
           selected-ids-property="[[selectedIdsProperty]]"
           selected-ids="{{selectedIds}}">
         </aggregation-display>
-      </div>
-
-      <div class="columns help layout horizontal">
-        <div class="layout horizontal flex">
-          <iron-icon class="styled-dialog-right-space" icon="help"></iron-icon>
-          <div class="styled-dialog-text">
-            The <strong>filtered</strong> list shows the terms that co-occur with your selected search terms.  This is the same list that is shown in the facet sidebar.
-          </div>
-        </div>
-        <div class="layout horizontal flex">
-          <iron-icon class="styled-dialog-right-space" icon="help"></iron-icon>
-          <div class="styled-dialog-text">
-            The <strong>unfiltered</strong> list ignores your selected search terms and shows all of the terms in the data.  Limited to the top [[limit]] terms for faster performance.
-          </div>
-        </div>
-        <div class="layout horizontal flex">
-          <iron-icon class="styled-dialog-right-space" icon="help"></iron-icon>
-          <div class="styled-dialog-text">
-            The <strong>selected</strong> list shows your selected search terms.
-          </div>
-        </div>
       </div>
     </styled-dialog>
   </template>
