@@ -203,6 +203,7 @@ Custom property                                     | Description               
           icon-property="[[iconProperty]]"
           id-property="[[idProperty]]"
           link-property="[[linkProperty]]"
+          source-property="[[sourceProperty]]"
           style-class-property="[[styleClassProperty]]"
           text-property="[[textProperty]]"
           data="[[_dataFilteredList]]"
@@ -223,6 +224,7 @@ Custom property                                     | Description               
           icon-property="[[iconProperty]]"
           id-property="[[idProperty]]"
           link-property="[[linkProperty]]"
+          source-property="[[sourceProperty]]"
           style-class-property="[[styleClassProperty]]"
           text-property="[[textProperty]]"
           data="[[_dataUnfilteredList]]"
@@ -243,6 +245,7 @@ Custom property                                     | Description               
           icon-property="[[iconProperty]]"
           id-property="[[idProperty]]"
           link-property="[[linkProperty]]"
+          source-property="[[sourceProperty]]"
           style-class-property="[[styleClassProperty]]"
           text-property="[[textProperty]]"
           data="[[_dataSelectedList]]"
@@ -495,6 +498,19 @@ Custom property                                     | Description               
         linkProperty: {
           type: String,
           value: 'link'
+        },
+
+        /**
+         * (Optional)
+         *
+         * The image source property in the each item.
+         *
+         * @type {String}
+         * @default 'source'
+         */
+        sourceProperty: {
+          type: String,
+          value: 'source'
         },
 
         /**
