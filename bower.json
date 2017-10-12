@@ -1,7 +1,7 @@
 {
   "name": "aggregation-dialog",
   "description": "A Polymer Element showing a set of aggregation-display elements in a styled-dialog.",
-  "version": "2.2.5",
+  "version": "2.2.6",
   "authors": [
     "Next Century Corporation"
   ],
@@ -18,14 +18,14 @@
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.2",
-    "aggregation-display": "DigElements/aggregation-display#2.2.3",
+    "aggregation-display": "DigElements/aggregation-display#2.2.4",
     "aggregation-sort": "DigElements/aggregation-sort#2.1.0",
     "elastic-error": "DigElements/elastic-error#2.0.0",
     "facet-aggregation-query": "DigElements/facet-aggregation-query#2.1.1",
-    "iron-flex-layout": "PolymerElements/iron-flex-layout#2.0.0",
+    "iron-flex-layout": "PolymerElements/iron-flex-layout#^2.0.0",
     "json-combine": "DigElements/json-combine#2.1.1",
     "paper-styles": "PolymerElements/paper-styles#^2.0.0",
-    "styled-dialog": "DigElements/styled-dialog#2.1.1"
+    "styled-dialog": "DigElements/styled-dialog#2.1.2"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^2.0.0",

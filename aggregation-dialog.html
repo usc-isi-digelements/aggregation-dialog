@@ -211,6 +211,7 @@ Custom property                                     | Description               
           limit="[[limit]]"
           header-data-name="Filtered [[_getTitleAndCount(headerDataName, limit, _dataFilteredList.length)]]"
           header-counts-name="[[headerCountsName]]"
+          image-style-class="[[imageStyleClass]]"
           show-checkboxes="[[showCheckboxes]]"
           checkbox-name="[[checkboxName]]"
           target="[[target]]"
@@ -232,6 +233,7 @@ Custom property                                     | Description               
           limit="[[limit]]"
           header-data-name="Unfiltered [[_getTitleAndCount(headerDataName, limit, _dataUnfilteredList.length)]]"
           header-counts-name="[[headerCountsName]]"
+          image-style-class="[[imageStyleClass]]"
           show-checkboxes="[[showCheckboxes]]"
           checkbox-name="[[checkboxName]]"
           target="[[target]]"
@@ -253,6 +255,7 @@ Custom property                                     | Description               
           limit="[[limit]]"
           header-data-name="Selected [[_getTitleAndCount(headerDataName, limit, _dataSelectedList.length)]]"
           header-counts-name="[[headerCountsName]]"
+          image-style-class="[[imageStyleClass]]"
           show-checkboxes="[[showCheckboxes]]"
           checkbox-name="[[checkboxName]]"
           target="[[target]]"
@@ -543,6 +546,19 @@ Custom property                                     | Description               
         headerCountsName: {
           type: String,
           value: 'Counts'
+        },
+
+        /**
+         * (Optional)
+         *
+         * The style class for all the images in the display.
+         *
+         * @type {String}
+         * @default ''
+         */
+        imageStyleClass: {
+          type: String,
+          value: ''
         },
 
         /**
