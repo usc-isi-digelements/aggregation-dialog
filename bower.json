@@ -1,7 +1,7 @@
 {
   "name": "aggregation-dialog",
   "description": "A Polymer Element showing a set of aggregation-display elements in a styled-dialog.",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "authors": [
     "Next Century Corporation"
   ],
@@ -18,7 +18,7 @@
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.2",
-    "aggregation-display": "DigElements/aggregation-display#2.3.0",
+    "aggregation-display": "DigElements/aggregation-display#2.3.2",
     "aggregation-sort": "DigElements/aggregation-sort#2.1.0",
     "elastic-error": "DigElements/elastic-error#2.0.0",
     "facet-aggregation-query": "DigElements/facet-aggregation-query#2.2.0",
