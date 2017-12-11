@@ -102,8 +102,8 @@ Custom property                                     | Description               
         pointer-events: none;
       }
 
-      .columns > *:not(:last-child) {
-        margin-right: 10px;
+      .columns > * {
+        margin-right: 20px;
         min-width: 285px;
       }
 
@@ -200,6 +200,7 @@ Custom property                                     | Description               
 
       <div class="columns layout horizontal flex">
         <aggregation-display class="flex"
+          hide-scroll
           count-property="[[countProperty]]"
           icon-property="[[iconProperty]]"
           id-property="[[idProperty]]"
@@ -222,6 +223,7 @@ Custom property                                     | Description               
         </aggregation-display>
 
         <aggregation-display class="flex"
+          hide-scroll
           count-property="[[countProperty]]"
           icon-property="[[iconProperty]]"
           id-property="[[idProperty]]"
@@ -244,6 +246,7 @@ Custom property                                     | Description               
         </aggregation-display>
 
         <aggregation-display class="flex"
+          hide-scroll
           count-property="[[countProperty]]"
           icon-property="[[iconProperty]]"
           id-property="[[idProperty]]"
