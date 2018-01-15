@@ -184,7 +184,10 @@ Custom property                                     | Description               
     </json-combine>
 
     <styled-dialog fill header="[[headerDataName]]" opened="{{_opened}}">
-      <aggregation-sort order-by="{{orderBy}}"></aggregation-sort>
+      <div class="layout horizontal">
+        <div class="styled-dialog-right-space">Sort By</div>
+        <aggregation-sort order-by="{{orderBy}}"></aggregation-sort>
+      </div>
 
       <div class="columns help layout horizontal">
         <div class="flex styled-dialog-text">
