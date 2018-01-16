@@ -89,6 +89,29 @@ Custom property                                     | Description               
         display: block;
       }
 
+      paper-dropdown-menu {
+        margin-right: 10px;
+        --paper-input-container: {
+          padding: 4px 0 0;
+          width: 140px;
+        };
+      }
+
+      paper-listbox {
+        --paper-listbox: {
+          padding: 0;
+        };
+      }
+
+      paper-item {
+        --paper-item-min-height: 30px;
+        --paper-item: {
+          cursor: pointer;
+          padding: 0 10px;
+          white-space: nowrap;
+        };
+      }
+
       .link {
         text-decoration: underline;
       }
@@ -184,17 +207,27 @@ Custom property                                     | Description               
     </json-combine>
 
     <styled-dialog fill header="[[headerDataName]]" opened="{{_opened}}">
-      <div class="layout horizontal">
+      <div class="layout horizontal center">
+        <div class="styled-dialog-right-space">Number of Results</div>
+        <paper-dropdown-menu label="Date" no-label-float>
+          <paper-listbox slot="dropdown-content" attr-for-selected="value" selected="{{limit}}">
+            <paper-item value="500">500</paper-item>
+            <paper-item value="1000">1,000 (Slow)</paper-item>
+            <paper-item value="2000">2,000 (Slower)</paper-item>
+            <paper-item value="0">Max (Slowest)</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
+
         <div class="styled-dialog-right-space">Sort By</div>
         <aggregation-sort order-by="{{orderBy}}"></aggregation-sort>
       </div>
 
       <div class="columns help layout horizontal">
         <div class="flex styled-dialog-text">
-          The <strong>filtered</strong> list shows results that co-occur with your selected search terms.  This is the same list from the facet sidebar.  Limited to the top [[limit]] results for faster performance.
+          The <strong>filtered</strong> list shows results that co-occur with your selected search terms.  This is the same list from the facet sidebar.  Limited to the top results for faster performance.
         </div>
         <div class="flex styled-dialog-text">
-          The <strong>unfiltered</strong> list shows all results from the data, ignoring your selected search terms.  Limited to the top [[limit]] results for faster performance.
+          The <strong>unfiltered</strong> list shows all results from the data, ignoring your selected search terms.  Limited to the top results for faster performance.
         </div>
         <div class="flex styled-dialog-text">
           The <strong>selected</strong> list shows your selected search terms from this facet.
