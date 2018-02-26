@@ -17,6 +17,7 @@ limitations under the License.
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../aggregation-display/aggregation-display.html">
 <link rel="import" href="../aggregation-sort/aggregation-sort.html">
+<link rel="import" href="../dropdown-menu/dropdown-menu.html">
 <link rel="import" href="../elastic-error/elastic-error.html">
 <link rel="import" href="../facet-aggregation-query/facet-aggregation-query.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
@@ -89,29 +90,6 @@ Custom property                                     | Description               
         display: block;
       }
 
-      paper-dropdown-menu {
-        margin-right: 10px;
-        --paper-input-container: {
-          padding: 4px 0 0;
-          width: 140px;
-        };
-      }
-
-      paper-listbox {
-        --paper-listbox: {
-          padding: 0;
-        };
-      }
-
-      paper-item {
-        --paper-item-min-height: 30px;
-        --paper-item: {
-          cursor: pointer;
-          padding: 0 10px;
-          white-space: nowrap;
-        };
-      }
-
       .link {
         text-decoration: underline;
       }
@@ -128,6 +106,10 @@ Custom property                                     | Description               
       .columns > * {
         margin-right: 20px;
         min-width: 285px;
+      }
+
+      dropdown-menu {
+        margin-right: 10px;
       }
 
       aggregation-display {
@@ -209,14 +191,13 @@ Custom property                                     | Description               
     <styled-dialog fill header="[[headerDataName]]" opened="{{_opened}}">
       <div class="layout horizontal center">
         <div class="styled-dialog-right-space">Number of Results</div>
-        <paper-dropdown-menu label="Date" no-label-float>
-          <paper-listbox slot="dropdown-content" attr-for-selected="value" selected="{{limit}}">
-            <paper-item value="500">500</paper-item>
-            <paper-item value="1000">1,000 (Slow)</paper-item>
-            <paper-item value="2000">2,000 (Slower)</paper-item>
-            <paper-item value="0">Max (Slowest)</paper-item>
-          </paper-listbox>
-        </paper-dropdown-menu>
+        <dropdown-menu
+          data='[{"title":"500","value":"500"},{"title":"1,000 (Slow)","value":"1000"},{"title":"2,000 (Slower)","value":"2000"},{"title":"Max (Slowest)","value":"0"}]'
+          label="Date"
+          large
+          no-label-float
+          selected="{{limit}}">
+        </dropdown-menu>
 
         <div class="styled-dialog-right-space">Sort By</div>
         <aggregation-sort order-by="{{orderBy}}"></aggregation-sort>
