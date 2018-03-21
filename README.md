@@ -43,12 +43,12 @@ Custom property                                     | Description               
 `--aggregation-dialog-bar-count-color`              | The color of the single or left count labels.                       | --paper-grey-900
 `--aggregation-dialog-bar-height`                   | The height of the single or left bars.                              | 20px
 `--aggregation-dialog-bar-title-color`              | The color of the single or left title labels.                       | --paper-grey-900
-`--aggregation-dialog-bar-title-hover-color`        | The color of the single or left title labels on hover (if a link).  | --paper-grey-600
+`--aggregation-dialog-bar-title-hover-color`        | The color of the single or left title labels on hover (if a link).  | --paper-indigo-900
 `--aggregation-dialog-second-bar-color`             | The color of the right (second) bars.                               | --paper-grey-300
 `--aggregation-dialog-second-bar-count-color`       | The color of the right (second) count labels.                       | --paper-grey-900
 `--aggregation-dialog-second-bar-height`            | The height of the right (second) bars.                              | 20px
 `--aggregation-dialog-second-bar-title-color`       | The color of the right (second) title labels.                       | --paper-grey-900
-`--aggregation-dialog-second-bar-title-hover-color` | The color of the right (second) title labels on hover (if a link).  | --paper-grey-600
+`--aggregation-dialog-second-bar-title-hover-color` | The color of the right (second) title labels on hover (if a link).  | --paper-indigo-900
 
 ### Dependencies
 
