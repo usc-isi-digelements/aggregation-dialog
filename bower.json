@@ -11,22 +11,22 @@
     "polymer"
   ],
   "main": "aggregation-dialog.html",
-  "homepage": "https://github.com/DigElements/aggregation-dialog/",
+  "homepage": "https://github.com/usc-isi-digelements/aggregation-dialog/",
   "ignore": [
     "/.*",
     "/test/"
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.2",
-    "aggregation-display": "DigElements/aggregation-display#2.4.6",
-    "aggregation-sort": "DigElements/aggregation-sort#2.2.1",
-    "dropdown-menu": "DigElements/dropdown-menu#2.0.1",
-    "elastic-error": "DigElements/elastic-error#2.0.0",
-    "facet-aggregation-query": "DigElements/facet-aggregation-query#2.3.1",
+    "aggregation-display": "usc-isi-digelements/aggregation-display#2.4.6",
+    "aggregation-sort": "usc-isi-digelements/aggregation-sort#2.2.1",
+    "dropdown-menu": "usc-isi-digelements/dropdown-menu#2.0.1",
+    "elastic-error": "usc-isi-digelements/elastic-error#2.0.0",
+    "facet-aggregation-query": "usc-isi-digelements/facet-aggregation-query#2.3.1",
     "iron-flex-layout": "PolymerElements/iron-flex-layout#^2.0.0",
-    "json-combine": "DigElements/json-combine#2.1.1",
+    "json-combine": "usc-isi-digelements/json-combine#2.1.1",
     "paper-styles": "PolymerElements/paper-styles#^2.0.0",
-    "styled-dialog": "DigElements/styled-dialog#2.2.0"
+    "styled-dialog": "usc-isi-digelements/styled-dialog#2.2.0"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^2.0.0",
